@@ -154,11 +154,16 @@ menu:
   #about: /about/ || user
   #tags: /tags/ || tags
   #categories: /categories/ || th
-  archives: /archives/ || archive
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat
+  essay: /categories/随笔  # 博客首页展示文本/访问路径/自定义归档名称
+  #read: /categories/阅读
+  study: /categories/学习
+  code: /categories/编程
 
+  archives: /archives/ || archive
+  
 # Enable / Disable menu icons / item badges.
 menu_settings:
   icons: true
@@ -170,9 +175,9 @@ menu_settings:
 # ---------------------------------------------------------------
 
 # Schemes
-scheme: Muse
+#scheme: Muse
 #scheme: Mist
-#scheme: Pisces
+scheme: Pisces
 #scheme: Gemini
 
 
@@ -294,7 +299,7 @@ excerpt_description: true
 # Automatically excerpt (Not recommend).
 # Use <!-- more --> in the post to control excerpt accurately.
 auto_excerpt:
-  enable: false
+  enable: ture
   length: 150
 
 # Read more button
@@ -979,8 +984,8 @@ three:
 # Canvas-nest
 # Dependencies: https://github.com/theme-next/theme-next-canvas-nest
 # For more information: https://github.com/hustcc/canvas-nest.js
-canvas_nest:
-  enable: false
+canvas_nest: 
+  enable: true
   onmobile: true # Display on mobile or not
   color: "0,0,255" # RGB values, use `,` to separate
   opacity: 0.5 # The opacity of line: 0~1
