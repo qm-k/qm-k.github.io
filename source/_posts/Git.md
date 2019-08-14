@@ -1,6 +1,6 @@
 ---
 title: Git学习记录
-categories: code
+categories: 编程
 ---
 # Git学习记录
 
