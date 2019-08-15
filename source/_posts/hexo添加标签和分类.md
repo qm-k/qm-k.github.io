@@ -83,7 +83,8 @@ tags:
 ```
 $ hexo clean #可以不clean
 $ hexo g
-$ hexo d
+$ hexo s --debughexo server -p 5000 #本地显示，正常为4000端口，如果占用可以用5000
+$ hexo d #确认无误可以部署
 ```
 
 # 参考资料
