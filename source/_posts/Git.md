@@ -166,3 +166,12 @@ $ git rm --cached README
 ```
 `mv`功能类似，不做叙述
 ## 版本管理
+* 查看最新的版本库里和工作区里对应文件的差异  
+```
+git diff HEAD -- filename
+```
+* 回退到指定版本
+```
+$ git log #查看版本信息
+$ git reset --hard commit_id # commit_id 查询到的版本号
+```
