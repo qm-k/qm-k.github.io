@@ -1,12 +1,19 @@
 ---
-title: Git学习记录
-categories: 编程
+title: Git学习笔记
+categories: 
+- 编程
+- Git
+#categories: 
+#- Git
+tags: 
+- code
 ---
-# Git学习记录
 
+# Git学习笔记
+<!-- more -->
 ## 获取与创建项目
 ### git init
-<!-- more -->
+
 用 `git init` 在本地新建Git仓，例如：
 ```
     $ mkdir new  
