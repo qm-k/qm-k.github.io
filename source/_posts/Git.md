@@ -175,3 +175,15 @@ git diff HEAD -- filename
 $ git log #查看版本信息
 $ git reset --hard commit_id # commit_id 查询到的版本号
 ```
+* 创建本地分支
+```
+$ git branch localbranchname
+```
+* 切换本地分支
+```
+$ git checkout branchname # checkout -b 进行创建之后再切换
+```
+* 由远程仓创建
+```
+$ git checkout -b localbranchname origin/remotebranchname #-b创建本地分支之后切换到对应的远程分支
+```
