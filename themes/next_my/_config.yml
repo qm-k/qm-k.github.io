@@ -157,10 +157,10 @@ menu:
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat
-  essay: /categories/随笔  # 博客首页展示文本/访问路径/自定义归档名称
+  essay: /categories/随笔 || align-left # 博客首页展示文本/访问路径/自定义归档名称 || 对应的图标，图标名称来自于FontAwesome icon
   #read: /categories/阅读
-  study: /categories/学习
-  code: /categories/编程
+  study: /categories/学习 || university # 图标网址 https://fontawesome.com/icons?d=gallery
+  code: /categories/编程 || cubes
 
   archives: /archives/ || archive
   
