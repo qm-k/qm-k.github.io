@@ -33,6 +33,7 @@ $ hexo init
 $ npm install
 $ npm install hexo-deployer-git
 ```
+    nodejs是可以直接是用apt安装的
 至此迁移工作完成可以进行部署
 ```
 $ hexo clean #如果出错进行清除尝试

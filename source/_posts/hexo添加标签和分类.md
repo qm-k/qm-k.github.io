@@ -13,8 +13,8 @@ categories:
 最终效果如下所示：  
 
 标签效果：  
-{% asset_img tags.jpg  %} 
-分类效果： 
+{% asset_img tags.jpg  %}   
+分类效果：  
 {% asset_img fenlei.jpg  %} 
 
 # 配置
@@ -28,7 +28,11 @@ menu:
   categories: /categories/ || th
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
+
+  essay: /categories/随笔 || align-left # 博客首页展示文本/访问路径/自定义归档名称 || 对应的图标
 ```
+## 如果想给标签加图标
+图标名称来自于 [FontAwesome icon](https://fontawesome.com/icons?d=gallery)  
 保存并关闭文件。
 * 生成页面
 此时通过`hexo s`可以在主页看到这两个导航，但是点进去后会得到 Cannot GET /tags/ 或Cannot GET /categories/的页面，需要分别为其创建相应的页面。  
