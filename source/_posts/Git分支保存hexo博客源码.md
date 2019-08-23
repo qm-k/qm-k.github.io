@@ -27,7 +27,8 @@ $ git push origin master:remotebranch # remotebranch为远程仓的分支名，�
 $ git clone git@github.com:qm-k/qm-k.github.io.git
 $ git branch -a #查看分支信息
 $ git checkout -b hexo origin/hexo #如果不在源码分支，则进行切换，同时创建本地hexo分支
-$ npm install hexo
+$ npm install hexo //失败可以尝试npm install -g hexo-cli  
+//-g为全局生效，直接安装在系统中
 $ hexo init 
 $ npm install
 $ npm install hexo-deployer-git
