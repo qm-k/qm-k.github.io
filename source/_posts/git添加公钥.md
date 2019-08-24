@@ -19,20 +19,13 @@ total 4
 ```
 # 生成新的SSH KEY
 输入`ssh-keygen -t rsa -C “email@email.com”`其中`“email@email.com”`为github账号,之后一路回车，效果如下： 
-
 {% asset_img 2019-08-23_16-31.png  %}   
-
 # 登录Github，点击setting添加公钥
 添加公钥  
-
-{% asset_img 2019-08-23_17-41.png  %}  
-
+{%asset_img 2019-08-23_17-41.png 添加公钥%}  
 输入`.pub`的内容，同时为此公钥设置一个名字，方便记忆（防止那一天忘了这是哪一台机器的公钥了）  
-
 {% asset_img 2019-08-23_17-43.png  %}  
-
 # 测试是否成功
     ssh -T git@github.com
-如下图即为配置成功：
-
+如下图即为配置成功：  
 {% asset_img 2019-08-23_17-48.png  %} 
