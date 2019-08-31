@@ -17,6 +17,7 @@ $ ls -ls ~/.ssh/
 total 4
 4 -rw-r--r-- 1 melrose_legend melrose_legend 884 8月  23 15:46 known_hosts
 ```
+PS:在win10的powershell中`.ssh`路径是一致的，`~/`路径在win10上对应为`C:\Users\username\`
 # 生成新的SSH KEY
 输入`ssh-keygen -t rsa -C “email@email.com”`其中`“email@email.com”`为github账号,之后一路回车，效果如下： 
 {% asset_img 2019-08-23_16-31.png  %}   

@@ -27,13 +27,17 @@ $ git push origin master:remotebranch # remotebranch为远程仓的分支名，�
 $ git clone git@github.com:qm-k/qm-k.github.io.git
 $ git branch -a #查看分支信息
 $ git checkout -b hexo origin/hexo #如果不在源码分支，则进行切换，同时创建本地hexo分支
-$ npm install hexo //失败可以尝试npm install -g hexo-cli  
+$ npm install hexo //失败可以先npm install -g hexo-cli  
 //-g为全局生效，直接安装在系统中
 $ hexo init 
 $ npm install
 $ npm install hexo-deployer-git
 ```
-    nodejs是可以直接是用apt安装的
+    PS: nodejs是可以直接是用apt安装的，如果是win10则可以直接在官网下载安装包在安装过程中选中x86_64即可。
+
+    hexo-cli和hexo是不同的，他是一个命令行工具，用以初始化，例如init，而hexo则用以支持在初始化完成之后的工作。
+
+    只要保证git和nodejs存在，以上步骤就可以完成
 至此迁移工作完成可以进行部署
 ```
 $ hexo clean #如果出错进行清除尝试
