@@ -37,4 +37,93 @@ gcc -v
 
 {% asset_img successfu_linstall.PNG 安装完成%}
 
-# 
+# 安装插件
+去左侧的插件商店中所搜一下 `C/C++`与`Code runner` 这两个插件，装上，这时候在右上角就能出现一个能直接运行的三角：  
+
+{% asset_img run_code.PNG 运行按钮%}  
+
+但是这时候运行不是在vscode集成的控制台里的，我们需要修改一下设置：文件>首选项>设置>用户设置>拓展>Run Code Configuration（直接搜Run Code Configuration往下翻也能找到）  
+{% asset_img run_in_terminal.PNG 设置%}  
+下边测试一下：
+```c++
+#include<bits/stdc++.h>  
+using namespace std;
+
+int main()
+{
+    cout<<"hello world"<<endl;
+    return 0;
+}
+```
+但是，runcode只是帮我们运行了`g++ xxx.cpp -o xxx.exe`，而不会加别的东西，也就是说，如果我们调用了opencv的库，这时候编译会出错的，因为他不会给我们加上`-lopencv`,这个时候我们就依然需要在命令行里手写g++了。
+
+ps：`bits/stdc++.h`是一个万能c++库，他包含了基本所有常用的c++库，但是也会造成编译慢的问题，能不用还是不要用。
+# 调试
+要实现断点调试需要先在工作区目录下新建一个`.vscode `文件夹（win10下如果不能新建`.`开头的文件夹，重命名成` .vscode. `就可以解决问题），添加两个文件， `launch.json` 和 `tasks.json`  
+将一下代码分别加入两个文件。
+launch.json
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C/C++",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "D:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/gdb.exe",
+            "preLaunchTask": "g++",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+        },
+    ]
+}
+```
+其中 `miDebuggerPath` 参数是用以搜索mingw安装的调试器(`gdb.exe`)的 ，所以这个路径要设置正确
+ps : `externalConsole`参数为`fales` 时才是在vscode集成的命令行中进行调试。 
+
+tasks.json
+```json
+{
+    "version": "2.0.0",
+    "command": "g++",
+    "args": [
+        "-g",
+        "${file}",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}.exe"
+    ],
+    "problemMatcher": {
+        "owner": "cpp",
+        "fileLocation": [
+            "relative",
+            "${workspaceRoot}"
+        ],
+        "pattern": {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "severity": 4,
+            "message": 5
+        }
+    },
+    "group": {
+        "kind": "build",
+        "isDefault": true
+    }
+}
+```
+此时可以按 `ctrl+shift+b` 直接调用配置好的g++ task 编译程序而不运行程序，但是要注意如果要单步运行就要有断点存在，不然在左侧的`debug`窗口中没有变量显示，也不能暂停，至少我在实际使用中是这样的情况。  
+{% asset_img debug.PNG debug%}
