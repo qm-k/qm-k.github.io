@@ -1,3 +1,4 @@
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <div class="copyright">{#
 #}{%- set current = date(Date.now(), "YYYY") %}{#
 #}{%- if theme.footer.beian.enable %}{#
@@ -38,6 +39,11 @@
 </div>
 
 {%- if theme.footer.powered.enable %}
+  <div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+  本站访客数:<span id="busuanzi_value_site_pv"></span>
+</span>
+</div>
   <div class="powered-by">{#
   #}{{ __('footer.powered', next_url('https://hexo.io', 'Hexo', {class: 'theme-link'})) }}{#
   #}{%- if theme.footer.powered.version %} v{{ hexo_env('version') }}{%- endif %}{#

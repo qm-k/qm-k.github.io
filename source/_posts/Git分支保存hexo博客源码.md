@@ -31,7 +31,9 @@ $ npm install hexo //失败可以先npm install -g hexo-cli
 //-g为全局生效，直接安装在系统中
 $ hexo init 
 $ npm install
-$ npm install hexo-deployer-git
+$ npm install hexo-deployer-git //快捷部署到git插件
+
+$ npm install hexo-generator-search --save //本地搜索插件
 ```
     PS: nodejs是可以直接是用apt安装的，如果是win10则可以直接在官网下载安装包在安装过程中选中x86_64即可。
 

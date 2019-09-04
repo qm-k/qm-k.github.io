@@ -6,6 +6,7 @@ tags:
 categories:
 - 编程
 - 工具
+copyright: true
 ---
 # 前言
 安装了vscode之后，写代码和丝滑流畅，脱离臃肿的`Visual Studio IDE`，优雅的进行断点调试，直接进行编译与运行，下边记录一下配置的过程。
