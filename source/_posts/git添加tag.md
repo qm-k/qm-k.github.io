@@ -2,8 +2,11 @@
 title: git添加tag
 copyright: true
 date: 2019-09-05 20:23:57
-tags:
+tags: 
+- code
 categories:
+- 编程
+- Git
 ---
 # 前言
 在发布软件时会加一个tag标注版本号，比如opencv可以通过tag转成对应的版本，tag会记录对应版本的commit号，所以在回溯版本时会非常的方便。
