@@ -35,10 +35,16 @@ win10的话直接去[官网](https://cmake.org/download/)上下载msi的安装�
 2. 选择输出路径，可以自己新建一个
 3. 点击config  
 {%asset_img cmake.PNG cmake界面%}  
-添加contrib库：  
+
+完成后添加contrib库：  
 {%asset_img contrib.PNG 附加库%}  
+
+之后搜索`build_opencv_world`,勾上，这里一定要勾上！！！
+{%asset_img vuild_opencv_world.png world%}  
+
 之后再此点击config，出现`configuring done`就可以点`generate`  
-{%asset_img config_done.PNG %}
+{%asset_img config_done.PNG %}  
+
 全部通过后会有：  
 {%asset_img generate.PNG }  
 
@@ -52,13 +58,47 @@ win10的话直接去[官网](https://cmake.org/download/)上下载msi的安装�
 右键生成，经过漫长的等待，，，直到：  
 弹出了个错误！！  
 {%asset_img err2_python.PNG%}  
+
+### 解决LNK1104,打不开python3_d.lib
 重新打开当时安装python的程序，点击修改，然后勾上`debug`选项，就像这样：  
 {%asset_img err2.PNG%}  
 然后安装，安装完成后给opencv_python3添加`.lib`路径  
 {%asset_img err2_add_path.PNG%}  
-打开属性，依次添加库目录与附加依赖项：
-{%asset_img err2_ku.png%}  
+打开属性，依次添加库目录与附加依赖项:  
+
+1. 将`python37_d.lib`所在文件夹的路径添加到库目录（用以指定搜索`.lib`的路径）里面
+{%asset_img python_lib.png%}  
+
+2. 添加附加依赖项`python37_d.lib`  
 {%asset_img err2_fujia.png%}  
-附加项中添加的路径就是刚找到的python37.lib  
+
+**应该是如果添加了库目录，这里就可以只写文件名，反之则可以写完整路径。**
+
+附加项中添加的路径就是刚找到的`python37.lib`的路径。
 {%asset_img err2_libs.png%}  
-然后重新生成opencv_python3。
+
+然后重新生成opencv_python3,成功。
+{%asset_img err2_well.png%}  
+[参考](https://blog.csdn.net/weixin_43788499/article/details/84933210)
+
+之后生成`INSTALL`,成功会显示：  
+{%asset_img install.png%}  
+然后就可以在编译好的文件就可以在install文件夹中找到了。
+{%asset_img over.png%}  
+
+## 添加环境变量
+新建一个项目，随便起一个名字。  
+打开下边的选项。
+{%asset_img shuxingguanli.png%}  
+{%asset_img dianjishuxing.png%}  
+
+打开属性，修改下边的两项,以及附加依赖项`opencv_world412.lib`(我的cv版本是4.12的所以是412，同时这里也是为什莫上边`cmake config`一定要勾选`build_opencv_world`的原因)  
+
+{%asset_img vs_config.png%}
+1. 包含目录  
+   {%asset_img baohan.png 包含目录%}
+2. 库目录
+   {%asset_img ku.png 库目录%}
+3. 附加依赖项  
+   {%asset_img fujiayilai.png 附加依赖%}
+
