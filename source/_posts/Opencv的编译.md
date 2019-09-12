@@ -101,4 +101,11 @@ win10的话直接去[官网](https://cmake.org/download/)上下载msi的安装�
    {%asset_img ku.png 库目录%}
 3. 附加依赖项  
    {%asset_img fujiayilai.png 附加依赖%}
+  **这里应该需要添加所有的`.lib`文件，复制下边的bat脚本在lib目录下运行就可以得到所有的文件名，记得将`.cmake`文件删掉再复制进附加依赖项**  
 
+```bat
+@echo off
+DIR "./" /B >A.TXT
+pause
+```
+之后就可以跑一个例程测试一下了。
