@@ -16,5 +16,9 @@ categories:
 <!--more-->
 # 文件系统
 其不同功能的组件是放在不同的目录下的，目录是按照功能进行分类的。
-{%asset_img %}
-## 
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+```

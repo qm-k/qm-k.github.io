@@ -3,6 +3,7 @@ title: 让vscode成为c/c++编译器
 date: 2019-08-31 17:54:00
 tags:
 - code
+- 奇淫巧计
 categories:
 - 编程
 - 工具
