@@ -56,6 +56,8 @@ mermaid: ## mermaid url https://github.com/knsv/mermaid
 在插件中搜索`mermaid`,直接安装，然后在命令中搜索  
 {%asset_img plug.png%}
 就可以进行预览了.
+ps:用了一会,感觉还是下面这个好用一点,也不用单独命令预览,依旧使用markdown的`all in one`的插件就可以预览  
+{%asset_img good.png%}
 ```mermaid
 classDiagram
 Class01 <|-- AveryLongClass : Cool
@@ -74,6 +76,6 @@ Class08 <--> C2: Cool label
 ```
 {%asset_img view.png%}
 ## 参考
-[荒野之萍的博客](https://www.cnblogs.com/icoty23/p/10911231.html)
-[插件官方GitHub](https://github.com/webappdevelp/hexo-filter-mermaid-diagrams)
-[Mermaid官方主页](https://mermaidjs.github.io/#/)
+[荒野之萍的博客](https://www.cnblogs.com/icoty23/p/10911231.html)  
+[插件官方GitHub](https://github.com/webappdevelp/hexo-filter-mermaid-diagrams)  
+[Mermaid插件官方主页](https://www.npmjs.com/package/hexo-filter-mermaid-diagrams)
