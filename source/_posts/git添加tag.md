@@ -35,6 +35,7 @@ git show tagname
 查看对应的tag详细信息，此时会打出commit号，方便回溯。
 ## 同步tag到远程服务器
 `git push origin [tagname]`推送单个分支  
+{%asset_img 推送tag.png %}  
 `git push origin --tags`推送所有分支
 ## 切换到指定tag
 可以直接切换，但是切换之后处于游离状态，不属于任何分支（branch），故此时可以直接基于此tag新建一个分支。
