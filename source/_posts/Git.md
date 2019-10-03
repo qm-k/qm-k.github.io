@@ -117,6 +117,9 @@ index 0000000..7a3b31e
 $ git config --global user.name 'qnb'
 $ git config --global user.email ‘emil@qq.com’
 ```
+在`git log`中有一项是`Author`，你设置的名字与电子邮箱就会在这里显示。  
+{%asset_img commit.jpg git_log%}
+
 接下来进行提交
 ```
 $ git commit -m '第一次提交' # -m 选项进行添加注释

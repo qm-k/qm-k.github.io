@@ -14,7 +14,7 @@ ROS对系统版本要求极其严格，基本上每一个Ubuntu的LTS（长期�
 打开install的[地址](http://wiki.ros.org/melodic/Installation),选择你使用的操作系统，win10我试了一次，感觉还是在Linux上方便，感兴趣可以自己试一下。  
 {%asset_img select.jpg select%}  
 
-进去之后有很完整的安装教程，如果你不想看，而且你的系统是Ubuntu或者是Ubuntu系列的什么系统，你可以直接跟着下边的步骤操作就行。  
+进去之后有很完整的安装教程，如果你不想看，而且你的系统是Ubuntu18.04或者是Ubuntu18.4系列的什么系统，你可以直接跟着下边的步骤操作就行。  
 # 添加ROS的软件源
 ## 国外的软件源
 网速好，能连外网可以直接：
