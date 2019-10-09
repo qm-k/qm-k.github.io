@@ -1,5 +1,5 @@
 ---
-title: Opencv的编译
+title: Opencv的编译WIN
 copyright: true
 date: 2019-09-08 16:15:03
 tags:
