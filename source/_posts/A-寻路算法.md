@@ -2,7 +2,7 @@
 title: A*寻路算法
 date: 2019-10-07 22:42:15
 tags:
-- ROS
+- 算法
 - 导航
 categories:
 - 学习
