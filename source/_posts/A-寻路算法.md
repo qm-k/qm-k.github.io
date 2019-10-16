@@ -8,6 +8,9 @@ categories:
 - 学习
 - 算法
 ---
+
+<blockquote class="blockquote-center">虽天下之大，大可去得</blockquote>
+
 在导航算法的入门当中经常会学的一个入门算法就是A\*算法，这里整理一下对A\*算法的理解。
 <!--more-->
 A\*算法本质上就是一个BSF的贪心算法，以下边这个地图为例。  
