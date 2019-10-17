@@ -5,7 +5,7 @@ tags:
 - code
 categories:
 - 编程
-- Linux
+- linux
 ---
 # if[$? -ne 0]中的-ne
 有几个常用的用于判断的参数：
