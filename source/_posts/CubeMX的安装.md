@@ -18,6 +18,7 @@ categories:
 {%asset_img Getsoftware.png%}  
 因为CubeMX是基于Java的，所以还需要安装一下Java，安装[链接](https://www.java.com/zh_CN/download/win10.jsp),下载后一直点确定就行，可能安装的时候会自动下载东西，网差的话多试几次。  
 {%asset_img Java.png%}  
+
 安装好之后还需要安装使用的芯片对应的芯片包。这个可以在软件内进行安装也可以在网站上单独下载安装包进行安装，一般在软件内安装更方便一些，但是对网络要求更高一点，需要科学上网，具体过程如下：
 - 打开CUBEMX，打开包管理器：
 {%asset_img manage.png%}  
@@ -25,4 +26,5 @@ categories:
 {%asset_img pack1.png%}  
 {%asset_img pack2.png%}  
 
-安装好后就可以开始工程了。
+安装好后就可以开始工程了。  
+所有过程中的路径一定不要有中文，如果遇到无法生成代码的问题，很大可能就是中文路径或者是权限不足导致的。

@@ -34,7 +34,7 @@ categories:
    {%asset_img Snipaste_2019-10-25_11-09-04.png%}  
 7. 生成并打开代码工程
    {%asset_img Snipaste_2019-10-25_11-11-18.png%}  
-   在main.c文件中最后面的USER CODE BEGIN 3和USER CODE END 3中间添加如下内容。
+   在main.c中while(1)中最后面的USER CODE BEGIN 3和USER CODE END 3中间添加如下内容。
 （用户代码要加在USER CODE BEGIN N和USER CODE END N之间，否则下次重新生成代码后，会被删除）
 ```c
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);//led pin reset
