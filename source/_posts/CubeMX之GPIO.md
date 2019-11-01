@@ -22,6 +22,7 @@ categories:
 像我手里随便找了个板子，原理图上显示led接在PB12端口上，设置PB12引脚为输出模式，直接点击要设置的引脚就能直接选择工作模式。
 {%asset_img Snipaste_2019-10-25_10-56-27.png%}  
 4. 配置时钟树
+   AHB总线的最高速度CubeMX会在框下面提示。
    {%asset_img Snipaste_2019-10-25_11-01-00.png %}   
    没错的话会变成这样：  
    {%asset_img Snipaste_2019-10-25_11-01-34.png%}  

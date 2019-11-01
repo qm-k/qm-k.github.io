@@ -1,5 +1,5 @@
 ---
-title: RTTread输出PWM失败原因
+title: RTThread输出PWM失败原因
 date: 2019-10-27 13:42:06
 tags:
 - 嵌入式搬砖手册
