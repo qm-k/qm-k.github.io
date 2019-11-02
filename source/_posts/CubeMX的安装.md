@@ -8,6 +8,8 @@ categories:
 - 嵌入式
 - CubeMX
 ---
+<blockquote class="blockquote-center">让所有人有机会成为Maker，之后再想办法成为Learner</blockquote>
+
 意法半导体的一系列软件工具让嵌入式工程师变成了大白菜，只需要点点点就能把硬件配置完成，让用户只关注于软件逻辑，再加上越来越成熟的HAL库，软件在不同硬件上的区别越来越小，可扩展性和可移植性都越来越强。下边从CubeMX的安装开始，逐步讲解STM系列的使用。
 <!--more-->
 现在ST公司升级和维护的库主要就是STM32CubeMX的HAL库和标准外设库，而STM32CubeMX是一个配置STM32代码的工具，它把很多东西封装的比较好，硬件抽象层（HAL）、中间层、示例代码等。  
