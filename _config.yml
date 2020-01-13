@@ -79,7 +79,9 @@ theme: hexo-theme
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:qm-k/qm-k.github.io.git
+  repo: 
+    github: git@github.com:qm-k/qm-k.github.io.git
+    coding: git@e.coding.net:babel/babel.git
   branch: master
 
 search: 
