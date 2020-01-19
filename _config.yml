@@ -102,20 +102,27 @@ mermaid: ## mermaid url https://github.com/knsv/mermaid
 neat_enable: true
 # 压缩html
 neat_html:
-  enable: true
+  enable: false
   exclude:
 # 压缩css  
 neat_css:
-  enable: true
+  enable: false
   exclude:
-    - '**/*.min.css'
+    - '*.min.css'
 # 压缩js
 neat_js:
-  enable: true
-  mangle: true
+  enable: false
+  mangle: false
   output:
   compress:
   exclude:
     - '**/*.min.js'
     - '**/jquery.fancybox.pack.js'
     - '**/index.js' 
+
+math:
+  engine: 'mathjax' # or 'katex'
+  mathjax:
+    # src: custom_mathjax_source
+    config:
+      # MathJax config

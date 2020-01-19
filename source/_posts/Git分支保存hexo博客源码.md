@@ -37,7 +37,9 @@ $ npm install hexo-generator-search --save //本地搜索插件
 
 $ npm install --save hexo-pdf //上传pdf插件
 
-$ npm install hexo-neat --save //压缩博客
+$ npm install hexo-neat --save //压缩博客插件  
+
+$ npm install hexo-math --save  //数学公式插件
 ```
     PS: nodejs是可以直接是用apt安装的，如果是win10则可以直接在官网下载安装包在安装过程中选中x86_64即可。
 
