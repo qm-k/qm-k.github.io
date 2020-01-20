@@ -44,6 +44,70 @@ $$ d(X,Y)= \sqrt{\sum_{k=1}^{n}{|x_i-y_i|}} $$
 ## K值的选择
 1. 如果选择较小的K值，就相当于用较小的领域中的训练实例进行预测，“学习”近似误差会减小，只有与输入实例较近或相似的训练实例才会对预测结果起作用，与此同时带来的问题是“学习”的估计误差会增大，换句话说，K值的减小就意味着整体模型变得复杂，容易发生过拟合；
 2. 如果选择较大的K值，就相当于用较大领域中的训练实例进行预测，其优点是可以减少学习的估计误差，但缺点是学习的近似误差会增大。这时候，与输入实例较远（不相似的）训练实例也会对预测器作用，使预测发生错误，且K值的增大就意味着整体的模型变得简单。
-3. K=N，则完全不足取，因为此时无论输入实例是什么，都只是简单的预测它属于在训练实例中最多的累，模型过于简单，忽略了训练实例中大量有用信息。  
+3. K=N，则完全不足取，因为此时无论输入实例是什么，都只是简单的预测它属于在训练实例中最多的类，模型过于简单，忽略了训练实例中大量有用信息。  
 
 在实际应用中，K值一般取一个比较小的数值，例如采用交叉验证法（简单来说，就是一部分样本做训练集，一部分做测试集）来选择最优的K值。
+
+
+# 算法实现
+python代码，在同一个目录下新建一个名为`KNN.xls`的表格，前两列作为特征值，第三列作为类别标签，之后可以直接运行脚本看到现象，或者也可以在命令行中使用方法生成样本。  
+```python
+#coding:utf-8
+
+import numpy as np
+import operator   #内置的算数比较包
+import xlrd    #用于操作表格
+
+##给出训练数据以及对应的类别
+def createDataSet():
+    group = np.array([[1.0,2.0],[1.2,0.1],[0.1,1.4],[0.3,3.5]])
+    labels = ['A','A','B','B']
+    return group,labels
+
+###通过KNN进行分类
+def classify(input,dataSet,label,k):
+    dataSize = dataSet.shape[0]
+    ####计算欧式距离
+    diff = np.tile(input,(dataSize,1)) - dataSet
+    sqdiff = diff ** 2
+    squareDist = np.sum(sqdiff,axis = 1)###行向量分别相加，从而得到新的一个行向量
+    dist = squareDist ** 0.5
+    
+    ##对距离进行排序
+    sortedDistIndex = np.argsort(dist)##argsort()根据元素的值从大到小对元素进行排序，返回下标
+
+    classCount={}
+    for i in range(k):
+        voteLabel = label[sortedDistIndex[i]]
+        ###对选取的K个样本所属的类别个数进行统计
+        classCount[voteLabel] = classCount.get(voteLabel,0) + 1
+    ###选取出现的类别次数最多的类别
+    maxCount = 0
+    for key,value in classCount.items():
+        if value > maxCount:
+            maxCount = value
+            classes = key
+
+    return classes
+
+if __name__ == '__main__':
+    group = np.array([[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]],dtype=np.float)
+    labels = ['?','?','?','?','?','?']
+
+    DataSet = xlrd.open_workbook(r'./KNN.xls')
+    sheet = DataSet.sheet_by_index(0)
+    print("数据共：",sheet.ncols," 列",sheet.nrows," 行")
+    print(group.shape[0])
+    for i in range(sheet.nrows):
+        group[i] = sheet.cell_value(i,0),sheet.cell_value(i,1)
+        labels[i] = sheet.cell_value(i,2)
+        print("第 ",i," 行的数据为",group[i],"类别为",labels[i])
+
+    inputdata = eval(input("please input your data ( separated by commas):"))
+    K = eval(input("input K value ：")) #eval 将输入时自动添加的""去掉
+    DataSet = np.array(inputdata)
+    output = classify(DataSet,group,labels,K)
+    print("resout of the class is : ",output)
+```
+具体代码可以去我GitHub上看：
+[https://github.com/qm-k/Algorithm_Getting_Started](https://github.com/qm-k/Algorithm_Getting_Started)
