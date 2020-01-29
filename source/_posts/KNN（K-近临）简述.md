@@ -6,6 +6,7 @@ tags:
 categories:
 - 学习
 - 算法
+- ML
 mathjax: true
 ---
 K-Nearest Neighbor algorithm简称KNN（K近邻算法），由名字来看就是依据原有数据之间的`距离`对新数据进行`分类`的一个算法。  

@@ -7,6 +7,7 @@ tags:
 categories:
 - 学习
 - 算法
+- SLAM、Navigation
 ---
 
 <blockquote class="blockquote-center">虽天下之大，大可去得</blockquote>

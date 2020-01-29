@@ -7,6 +7,7 @@ tags:
 - CV
 categories:
 - 学习
+- 算法
 - CV
 ---
 # CV源码
