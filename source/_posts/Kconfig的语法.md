@@ -3,7 +3,6 @@ title: Kconfig的语法
 date: 2019-10-13 18:22:56
 tags:
 categories:
-- 编程
 - linux
 ---
 内核在编译的时候会遍历每一个目录下的所有的Makefile文件，来决定编译哪个文件，确定文件的依赖关系。而Makefile会根据Kconfig来生成，也就是说，Kconfig配置了哪些文件编译，哪些文件不编译。  

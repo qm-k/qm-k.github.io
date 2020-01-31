@@ -3,7 +3,6 @@ title: Ubuntu命令行连接WiFi
 date: 2019-09-27 20:56:40
 tags:
 categories:
-- 编程
 - linux
 ---
 很多时候没有办法直接用图形界面控制远程的Linux设备，比如ssh连接的时候，这个时候就需要使用cli（命令行）工具进行控制了，经常会使用NetworkManager工具进行网络管理，命令行中使用的命令是`nmcli`，其功能有一下常用的几项：

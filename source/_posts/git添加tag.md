@@ -5,7 +5,6 @@ date: 2019-09-05 20:23:57
 tags: 
 - code
 categories:
-- 编程
 - Git
 ---
 # 前言

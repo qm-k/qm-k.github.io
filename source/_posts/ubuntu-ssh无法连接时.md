@@ -4,7 +4,6 @@ date: 2019-09-30 17:17:41
 tags:
 - 奇淫巧计
 categories:
-- 编程
 - error&warning
 ---
 新装的`Ubuntu`有可能在ssh连接时连接不上。这个时候应首先确认是否在统一局域网网段下：  

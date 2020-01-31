@@ -5,8 +5,7 @@ tags:
 - code
 - 奇淫巧计
 categories:
-- 编程
-- 工具
+- linux
 copyright: true
 ---
 # 前言

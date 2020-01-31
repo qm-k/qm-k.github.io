@@ -10,7 +10,7 @@ categories:
 - 算法
 - CV
 ---
-提起特征点检测就绕不开ORB这个经典的检测算法，下边对ORb特征识别进行简单的叙述。
+提起特征点检测就绕不开ORB这个经典的检测算法，下边对ORB特征识别进行简单的叙述。
 <!--more-->
 # ORB原理
 ORB特征是将FAST特征点的检测方法与BRIEF特征描述子综合起来，先通过FAST特征点检测图像上存在的可用特征点，检测到之后在特征点附近的像素上通过BRIEF特征描述算子对特征点进行描述，在匹配阶段通过BRIEF特征描述算子计算得到的特征向量进行相似度判断进行匹配。
@@ -26,7 +26,8 @@ $$
 {%asset_img FAST_9.png FAST%}  
 为了获得更快的结果，还采用了额外的加速办法。如果测试了候选点周围每隔90度角的4个点，应该至少有3个和候选点的灰度值差足够大，否则则不用再计算其他点，直接认为该候选点不是特征点。候选点周围的圆的选取半径是一个很重要的参数，这里为了简单高效，采用半径为3，共有16个周边像素需要比较。为了提高比较的效率，通常只使用N个周边像素来比较，也就是大家经常说的FAST-N。很多文献推荐FAST-9，作者的主页上有FAST-9、FAST-10、FAST-11、FAST-12，大家使用比较多的是FAST-9和FAST-12。  
 # 计算特征描述子（BRIEF）
-得到特征点后我们需要以某种方式描述这些特征点的属性。这些属性的输出我们称之为该特征点的描述子（Feature DescritorS）.ORB采用BRIEF算法来计算一个特征点的描述子。  
+得到特征点后我们需要以某种方式描述这些特征点的属性。这些属性的输出我们称之为该特征点的描述子（Feature DescritorS）。ORB采用BRIEF算法来计算一个特征点的描述子。  
+
 BRIEF算法的核心思想是在关键点P的周围以一定模式选取N个点对，把这N个点对的比较结果组合起来作为描述子。
 在选取点对时有多种方法，设我们在特征点的邻域块大小为S×S内选择n个点对(p,q)：
 - 在图像块内平均采样；
@@ -62,7 +63,11 @@ $$
 可得最终的描述子为$T=1101$
 ## 理想的特征点描述子应该具备的属性
 人在观察一张图像的时候是不关心图像的摆放、明暗、大小的，人眼都可以准确的根据图像的特征对内容进行判断，相应的我们的描述子也应该有这样的特性，应该具有尺度一致性、旋转一致性等。  
-在在OpenCV中的ORB使用了图像金字塔实现了尺度一致性，下边来解决一下旋转一致性的问题。  
+BRIEF的优点在于速度，缺点也相当明显：
+- 不具备旋转不变性。
+- 对噪声敏感
+- 不具备尺度不变性。
+在在OpenCV中的ORB使用了图像金字塔解决了尺度一致性，下边来解决一下旋转一致性和噪声的问题。  
 ## 旋转一致性
 在当前关键点P周围以一定模式选取N个点对，组合这N个点对的T操作的结果就为最终的描述子。当我们选取点对的时候，是以当前关键点为原点，以水平方向为X轴，以垂直方向为Y轴建立坐标系。当图片发生旋转时，坐标系不变，同样的取点模式取出来的点却不一样，计算得到的描述子也不一样，这是不符合我们要求的。因此我们需要重新建立坐标系，使新的坐标系可以跟随图片的旋转而旋转。这样我们以相同的取点模式取出来的点将具有一致性。  
 
@@ -124,5 +129,122 @@ class Solution {
         }
         return count;
     }
+}
+```
+
+# 代码
+特征点类：
+```c++
+class KeyPoint
+{
+    Point2f  pt;  //坐标
+    float  size; //特征点邻域直径
+    float  angle; //特征点的方向，值为[零,三百六十)，负值表示不使用
+    float  response;
+    int  octave; //特征点所在的图像金字塔的组
+    int  class_id; //用于聚类的id
+}
+```
+存放匹配结果的结构：
+```c++
+struct DMatch
+{//三个构造函数
+    DMatch():
+queryIdx(-1),trainIdx(-1),imgIdx(-1),distance(std::numeric_limits<float>::max()) {}
+    DMatch(int  _queryIdx, int  _trainIdx, float  _distance ) :
+queryIdx( _queryIdx),trainIdx( _trainIdx), imgIdx(-1),distance( _distance) {}
+    DMatch(int  _queryIdx, int  _trainIdx, int  _imgIdx, float  _distance ) :                   
+queryIdx(_queryIdx), trainIdx( _trainIdx), imgIdx( _imgIdx),distance( _distance) {}
+    intqueryIdx;  //此匹配对应的查询图像的特征描述子索引
+    inttrainIdx;   //此匹配对应的训练(模板)图像的特征描述子索引
+    intimgIdx;    //训练图像的索引(若有多个)
+    float distance;  //两个特征向量之间的欧氏距离，越小表明匹配度越高。
+    booloperator < (const DMatch &m) const;
+};
+```
+完整代码
+```c++
+#include <iostream>
+#include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+using namespace std;
+using namespace cv;
+
+int main(int argc, char** argv)
+{
+	if (argc != 3)
+	{
+		cout << "usage: feature_extraction img1 img2" << endl;
+		return 1;
+	}
+	//-- 读取图像
+	Mat img_1 = imread(argv[1]);//, CV_LOAD_IMAGE_COLOR
+	Mat img_2 = imread(argv[2]);//, CV_LOAD_IMAGE_COLOR
+
+	//- 初始化detector检测器descriptor描述子matcher匹配器，并声明怕匹配使用汉明距离
+	std::vector<KeyPoint> keypoints_1, keypoints_2;
+	Mat descriptors_1, descriptors_2;
+	Ptr<FeatureDetector> detector = ORB::create();
+	Ptr<DescriptorExtractor> descriptor = ORB::create();
+	Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce-Hamming");
+
+	//-- 第一步:检测 Oriented FAST 特征点位置
+	detector->detect(img_1, keypoints_1);
+	detector->detect(img_2, keypoints_2);
+
+	//-- 第二步:计算特征点 BRIEF 描述子
+	descriptor->compute(img_1, keypoints_1, descriptors_1);
+	descriptor->compute(img_2, keypoints_2, descriptors_2);
+
+	Mat outimg1;
+	drawKeypoints(img_1, keypoints_1, outimg1, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
+	imshow("ORB特征点", outimg1);
+
+	//-- 第三步:对两幅图像中的BRIEF描述子进行匹配，使用 Hamming 距离
+	//-- 并创建DMatch对象存储匹配的结果
+	vector<DMatch> matches;
+	matcher->match(descriptors_1, descriptors_2, matches);
+
+	//-- 第四步:匹配点对筛选，设置匹配度的上下限的初始值，通过遍历描述子的距离更新为实际的上下限最值
+	double min_dist = 10000, max_dist = 0;
+
+	//找出所有匹配之间的最小距离和最大距离, 即是最相似的和最不相似的两组点之间的距离
+	for (int i = 0; i < descriptors_1.rows; i++)
+	{
+		double dist = matches[i].distance;
+		if (dist < min_dist) min_dist = dist;
+		if (dist > max_dist) max_dist = dist;
+	}
+
+	// 使用max_element和min_element STL找出第一个最大（最小）值，与上边循环功能相同
+	min_dist = min_element(matches.begin(), matches.end(), [](const DMatch& m1, const DMatch& m2) {return m1.distance < m2.distance; })->distance;
+	max_dist = max_element(matches.begin(), matches.end(), [](const DMatch& m1, const DMatch& m2) {return m1.distance < m2.distance; })->distance;
+
+	printf("-- Max dist : %f \n", max_dist);
+	printf("-- Min dist : %f \n", min_dist);
+
+	//当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限，进行限幅.
+	//将有效的匹配结果存入good_matches
+	std::vector< DMatch > good_matches;
+	for (int i = 0; i < descriptors_1.rows; i++)
+	{
+		if (matches[i].distance <= max(2 * min_dist, 30.0))
+		{
+			good_matches.push_back(matches[i]);
+		}
+	}
+
+	//-- 第五步:绘制匹配结果
+	Mat img_match;
+	Mat img_goodmatch;
+	drawMatches(img_1, keypoints_1, img_2, keypoints_2, matches, img_match);
+	drawMatches(img_1, keypoints_1, img_2, keypoints_2, good_matches, img_goodmatch);
+	imshow("所有匹配点对", img_match);
+	imshow("优化后匹配点对", img_goodmatch);
+	waitKey(0);
+
+	return 0;
 }
 ```

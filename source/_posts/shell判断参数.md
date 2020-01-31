@@ -4,7 +4,6 @@ date: 2019-08-23 15:35:16
 tags:
 - code
 categories:
-- 编程
 - linux
 ---
 # if[$? -ne 0]中的-ne
