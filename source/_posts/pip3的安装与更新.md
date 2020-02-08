@@ -7,8 +7,8 @@ tags:
 categories:
 - linux
 ---
-<!--more-->
 # 安装
+<!--more-->
 在Ubuntu系统上，一般会默认安装python2和python3，在阿里的云服务器上一般会附带pip2。如果需要更新python3，不要直接卸载，会导致系统崩溃，如果要安装pip3，可以直接执行：
 ```
 sudo apt-get install python3-pip
