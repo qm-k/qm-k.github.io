@@ -52,3 +52,7 @@ $ hexo g
 $ hexo s --debughexo server -p 5000 #本地显示，正常为4000端口，如果占用可以用5000
 $ hexo d #确认无误可以部署
 ```
+可以将源码分支设为默认分支，这样可以方便在clone下来之后直接进行编辑，同时推送保存可以使用：
+```
+git push origin HEXO:HEXO #(本地分支):(远程分支)
+```
