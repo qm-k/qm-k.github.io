@@ -24,7 +24,7 @@ ros自带的小乌龟节点`rosrun turtlesim turtlesim_node`会根据`/turtle1/c
 |:---:|:---:|
 |编译|$catkin_make <br> #只能在工程的根目录下进行，就是在上文的catkin_ws中|
 |启动小乌龟的节点|$rosrun turtlesim turtlesim_node|
-|启动自己的节点|$rosrun <包名> <节点名> <br> 包名是创建时的命令指定的也就是src目录下的文件夹名，可以进行多级嵌套以最深处的为准 <br> 节点名则为编译源文件时在CMakelist.txt中指定的可执行程序名，或为python等脚本语言的脚本名|
+|启动自己的节点|$rosrun <包名> <节点名> <br> 包名是创建时的命令指定的也就是src目录下的文件夹名，可以进行多级嵌套以最深处的为准 <br> 节点名则为编译源文件时在CMakelist.txt中指定的可执行程序名，或为python等脚本语言的脚本名<br>*注意：这个和系统运行时计算图中的节点不是一个东西，计算图中的节点是程序中使用ros::init()进行定义的*|
 |图形化显示当前的节点关系|$rosrun rqt_graph rqt_graph |
 |显示当前的话题列表|$rostopic list |
 |生效环境变量|$source devel/setup.bash|
@@ -41,7 +41,7 @@ ros自带的小乌龟节点`rosrun turtlesim turtlesim_node`会根据`/turtle1/c
 #include <geometry_msgs/Twist.h>
 int main(int argc ,char **argv )
 {
-    //1. ROS节点初始话
+    //1. ROS节点初始化，定义计算图的节点名为vel_public
     ros::init(argc,argv,"vel_public");
     //创建节点句柄
     ros::NodeHandle n;
