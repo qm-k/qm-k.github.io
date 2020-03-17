@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="K-Nearest Neighbor algorithm简称KNN（K近邻算法），由名字来看就是依据原有数据之间的距离对新数据进行分类的一个算法。">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KNN（K-近临）简述">
+<meta property="og:url" content="http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="K-Nearest Neighbor algorithm简称KNN（K近邻算法），由名字来看就是依据原有数据之间的距离对新数据进行分类的一个算法。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/KNN.png">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.774Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KNN（K-近临）简述">
+<meta name="twitter:description" content="K-Nearest Neighbor algorithm简称KNN（K近邻算法），由名字来看就是依据原有数据之间的距离对新数据进行分类的一个算法。">
+<meta name="twitter:image" content="http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/KNN.png">
+  <link rel="canonical" href="http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>KNN（K-近临）简述 | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">KNN（K-近临）简述
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-01-19 17:07:37" itemprop="dateCreated datePublished" datetime="2020-01-19T17:07:37+08:00">2020-01-19</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/算法/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/01/19/KNN（K-近临）简述/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2020/01/19/KNN（K-近临）简述/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>K-Nearest Neighbor algorithm简称KNN（K近邻算法），由名字来看就是依据原有数据之间的<code>距离</code>对新数据进行<code>分类</code>的一个算法。  </p>
+<a id="more"></a>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>最简单的分类器可以将所有的数据对应的类别进行记录，在得到新数据时将数据的属性与已记录的数据进行匹配，当完全匹配时即可确定数据的类型。  </p>
+<p>但是一般情况下不可能对所有可能的数据进行统计，所以这时候就出现了KNN这样基于数据统计的算法（其实绝大多数机器学习算法都是基于数据统计的）。  </p>
+<h1 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h1><p>KNN是通过对已知的样本特征值求距离进行分类的，即得到一个样本在特征空间中与其最相似（或者说最邻近）的K个样本，则这K个样本中最多的类型就认为是所求样本的特征值。  </p>
+<p>下面通过一个简单的例子来说明一下（又是这张图）：  </p>
+<img src="/2020/01/19/KNN（K-近临）简述/KNN.png">  
+<p>由图中我们可以看出在平面（特征空间）上共计由三类样本，我们将红色三角化为一类，将蓝色方块化为一类，绿色的圆作为待分类的样本，每个样本都有两个坐标（特征值），分别为x轴坐标和y轴坐标。真实的场景中这里可以是高维的特征空间和特征向量对应分类样本中可提取的特征值。接着看这张图，根据上边所说，将有一下两种情况：  </p>
+<ul>
+<li>若K = 3，则可以画出以绿色为圆心的第一条实线将三个最近的样本包括进来，则这时候我们则将圆划分为红色三角形的类别。  </li>
+<li>同理，若K = 5，则蓝色的占3/5，这时候蓝色占多数，将圆形的样本分类为蓝色正方形。  </li>
+</ul>
+<p>总结起来就是几个步骤：</p>
+<ul>
+<li>求得待分类样本与数据集中所有样本的距离（一般我们用欧式距离或者曼哈顿距离）</li>
+<li>将数据集中的样本按照距离由小到大排序，取前K个数据</li>
+<li>统计前K个数据中各个类别出现的频率</li>
+<li>频率出现最高的类别就可以认为是代求的样本的类别  <h1 id="欧式距离与曼哈顿距离"><a href="#欧式距离与曼哈顿距离" class="headerlink" title="欧式距离与曼哈顿距离"></a>欧式距离与曼哈顿距离</h1><h2 id="欧式距离"><a href="#欧式距离" class="headerlink" title="欧式距离"></a>欧式距离</h2>$$ d(X,Y)= \sqrt{\sum_{k=1}^{n}{(x_i-y_i)}^2} $$<br>欧式距离也称欧几里得距离，是最常见的距离度量，衡量的是多维空间中两个点之间的绝对距离。<br>也就是N维空间中两点间的真实距离，或向量的自然长度。  <h2 id="曼哈顿距离"><a href="#曼哈顿距离" class="headerlink" title="曼哈顿距离"></a>曼哈顿距离</h2>$$ d(X,Y)= \sqrt{\sum_{k=1}^{n}{|x_i-y_i|}} $$<br>曼哈顿距离，也称出租车距离，也就是在各个维度上的距离差之和。曼哈顿距离也是最简单的距离计算方法。  </li>
+</ul>
+<h1 id="K值的意义和选择"><a href="#K值的意义和选择" class="headerlink" title="K值的意义和选择"></a>K值的意义和选择</h1><h2 id="K的意义"><a href="#K的意义" class="headerlink" title="K的意义"></a>K的意义</h2><p>来了一个样本x，要给它分类，即求出它的y，就从数据集中，在x附近找离它最近的K个数据点，这K个数据点，类别c占的个数最多，就把x的label设为c  </p>
+<h2 id="K值的选择"><a href="#K值的选择" class="headerlink" title="K值的选择"></a>K值的选择</h2><ol>
+<li>如果选择较小的K值，就相当于用较小的领域中的训练实例进行预测，“学习”近似误差会减小，只有与输入实例较近或相似的训练实例才会对预测结果起作用，与此同时带来的问题是“学习”的估计误差会增大，换句话说，K值的减小就意味着整体模型变得复杂，容易发生过拟合；</li>
+<li>如果选择较大的K值，就相当于用较大领域中的训练实例进行预测，其优点是可以减少学习的估计误差，但缺点是学习的近似误差会增大。这时候，与输入实例较远（不相似的）训练实例也会对预测器作用，使预测发生错误，且K值的增大就意味着整体的模型变得简单。</li>
+<li>K=N，则完全不足取，因为此时无论输入实例是什么，都只是简单的预测它属于在训练实例中最多的类，模型过于简单，忽略了训练实例中大量有用信息。  </li>
+</ol>
+<p>在实际应用中，K值一般取一个比较小的数值，例如采用交叉验证法（简单来说，就是一部分样本做训练集，一部分做测试集）来选择最优的K值。</p>
+<h1 id="算法实现"><a href="#算法实现" class="headerlink" title="算法实现"></a>算法实现</h1><p>python代码，在同一个目录下新建一个名为<code>KNN.xls</code>的表格，前两列作为特征值，第三列作为类别标签，之后可以直接运行脚本看到现象，或者也可以在命令行中使用方法生成样本。  </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding:utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> operator   <span class="comment">#内置的算数比较包</span></span><br><span class="line"><span class="keyword">import</span> xlrd    <span class="comment">#用于操作表格</span></span><br><span class="line"></span><br><span class="line"><span class="comment">##给出训练数据以及对应的类别</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">createDataSet</span><span class="params">()</span>:</span></span><br><span class="line">    group = np.array([[<span class="number">1.0</span>,<span class="number">2.0</span>],[<span class="number">1.2</span>,<span class="number">0.1</span>],[<span class="number">0.1</span>,<span class="number">1.4</span>],[<span class="number">0.3</span>,<span class="number">3.5</span>]])</span><br><span class="line">    labels = [<span class="string">'A'</span>,<span class="string">'A'</span>,<span class="string">'B'</span>,<span class="string">'B'</span>]</span><br><span class="line">    <span class="keyword">return</span> group,labels</span><br><span class="line"></span><br><span class="line"><span class="comment">###通过KNN进行分类</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">classify</span><span class="params">(input,dataSet,label,k)</span>:</span></span><br><span class="line">    dataSize = dataSet.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment">####计算欧式距离</span></span><br><span class="line">    diff = np.tile(input,(dataSize,<span class="number">1</span>)) - dataSet</span><br><span class="line">    sqdiff = diff ** <span class="number">2</span></span><br><span class="line">    squareDist = np.sum(sqdiff,axis = <span class="number">1</span>)<span class="comment">###行向量分别相加，从而得到新的一个行向量</span></span><br><span class="line">    dist = squareDist ** <span class="number">0.5</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">##对距离进行排序</span></span><br><span class="line">    sortedDistIndex = np.argsort(dist)<span class="comment">##argsort()根据元素的值从大到小对元素进行排序，返回下标</span></span><br><span class="line"></span><br><span class="line">    classCount=&#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(k):</span><br><span class="line">        voteLabel = label[sortedDistIndex[i]]</span><br><span class="line">        <span class="comment">###对选取的K个样本所属的类别个数进行统计</span></span><br><span class="line">        classCount[voteLabel] = classCount.get(voteLabel,<span class="number">0</span>) + <span class="number">1</span></span><br><span class="line">    <span class="comment">###选取出现的类别次数最多的类别</span></span><br><span class="line">    maxCount = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> key,value <span class="keyword">in</span> classCount.items():</span><br><span class="line">        <span class="keyword">if</span> value &gt; maxCount:</span><br><span class="line">            maxCount = value</span><br><span class="line">            classes = key</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> classes</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    group = np.array([[<span class="number">0</span>,<span class="number">0</span>],[<span class="number">0</span>,<span class="number">0</span>],[<span class="number">0</span>,<span class="number">0</span>],[<span class="number">0</span>,<span class="number">0</span>],[<span class="number">0</span>,<span class="number">0</span>],[<span class="number">0</span>,<span class="number">0</span>]],dtype=np.float)</span><br><span class="line">    labels = [<span class="string">'?'</span>,<span class="string">'?'</span>,<span class="string">'?'</span>,<span class="string">'?'</span>,<span class="string">'?'</span>,<span class="string">'?'</span>]</span><br><span class="line"></span><br><span class="line">    DataSet = xlrd.open_workbook(<span class="string">r'./KNN.xls'</span>)</span><br><span class="line">    sheet = DataSet.sheet_by_index(<span class="number">0</span>)</span><br><span class="line">    print(<span class="string">"数据共："</span>,sheet.ncols,<span class="string">" 列"</span>,sheet.nrows,<span class="string">" 行"</span>)</span><br><span class="line">    print(group.shape[<span class="number">0</span>])</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(sheet.nrows):</span><br><span class="line">        group[i] = sheet.cell_value(i,<span class="number">0</span>),sheet.cell_value(i,<span class="number">1</span>)</span><br><span class="line">        labels[i] = sheet.cell_value(i,<span class="number">2</span>)</span><br><span class="line">        print(<span class="string">"第 "</span>,i,<span class="string">" 行的数据为"</span>,group[i],<span class="string">"类别为"</span>,labels[i])</span><br><span class="line"></span><br><span class="line">    inputdata = eval(input(<span class="string">"please input your data ( separated by commas):"</span>))</span><br><span class="line">    K = eval(input(<span class="string">"input K value ："</span>)) <span class="comment">#eval 将输入时自动添加的""去掉</span></span><br><span class="line">    DataSet = np.array(inputdata)</span><br><span class="line">    output = classify(DataSet,group,labels,K)</span><br><span class="line">    print(<span class="string">"resout of the class is : "</span>,output)</span><br></pre></td></tr></table></figure>
+
+<p>具体代码可以去我GitHub上看：<br><a href="https://github.com/qm-k/Algorithm_Getting_Started" target="_blank" rel="noopener">https://github.com/qm-k/Algorithm_Getting_Started</a></p>
+
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/" title="KNN（K-近临）简述">http://www.qm-k.xyz/2020/01/19/KNN（K-近临）简述/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/算法/" rel="tag"># 算法</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/11/02/CubeMX之EXIT/" rel="next" title="CubeMX之EXTI">
+                  <i class="fa fa-chevron-left"></i> CubeMX之EXTI
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/01/24/回归常用评价指标/" rel="prev" title="回归常用评价指标">
+                  回归常用评价指标 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现过程"><span class="nav-number">2.</span> <span class="nav-text">实现过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#欧式距离与曼哈顿距离"><span class="nav-number">3.</span> <span class="nav-text">欧式距离与曼哈顿距离</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#欧式距离"><span class="nav-number">3.1.</span> <span class="nav-text">欧式距离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#曼哈顿距离"><span class="nav-number">3.2.</span> <span class="nav-text">曼哈顿距离</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#K值的意义和选择"><span class="nav-number">4.</span> <span class="nav-text">K值的意义和选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#K的意义"><span class="nav-number">4.1.</span> <span class="nav-text">K的意义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#K值的选择"><span class="nav-number">4.2.</span> <span class="nav-text">K值的选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法实现"><span class="nav-number">5.</span> <span class="nav-text">算法实现</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+    
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>

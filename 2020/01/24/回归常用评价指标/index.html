@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="回归算法常用的评价指标：MSE，RMSE，MAE、R-Squared。">
+<meta name="keywords" content="算法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="回归常用评价指标">
+<meta property="og:url" content="http://www.qm-k.xyz/2020/01/24/回归常用评价指标/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="回归算法常用的评价指标：MSE，RMSE，MAE、R-Squared。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="回归常用评价指标">
+<meta name="twitter:description" content="回归算法常用的评价指标：MSE，RMSE，MAE、R-Squared。">
+  <link rel="canonical" href="http://www.qm-k.xyz/2020/01/24/回归常用评价指标/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>回归常用评价指标 | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2020/01/24/回归常用评价指标/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">回归常用评价指标
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-01-24 22:06:14" itemprop="dateCreated datePublished" datetime="2020-01-24T22:06:14+08:00">2020-01-24</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/算法/ML/" itemprop="url" rel="index"><span itemprop="name">ML</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/01/24/回归常用评价指标/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2020/01/24/回归常用评价指标/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>回归算法常用的评价指标：MSE，RMSE，MAE、R-Squared。</p>
+<a id="more"></a>
+<h1 id="均方误差（MES：Mean-Squared-Error）"><a href="#均方误差（MES：Mean-Squared-Error）" class="headerlink" title="均方误差（MES：Mean Squared Error）"></a>均方误差（MES：Mean Squared Error）</h1><p>$$ \frac{1}{m} \sum_{i=1}^{m} ({y_i}-\hat{y_i})^2$$<br>使用测试集上的值（真实值$y_i$）-预测值（$\hat{y_i}$），之后平方再取平均，经常会用在线性回归上做损失函数，因为他直接表示了预测值和真实值的误差大小，所以很适合来评估线性回归模型的准确度。  </p>
+<h1 id="均方根误差（RMSE：Root-Mean-Squard-Error）"><a href="#均方根误差（RMSE：Root-Mean-Squard-Error）" class="headerlink" title="均方根误差（RMSE：Root Mean Squard Error）"></a>均方根误差（RMSE：Root Mean Squard Error）</h1><h2 id="本体"><a href="#本体" class="headerlink" title="本体"></a>本体</h2><p>$$ \sqrt{ \frac{1}{m} \sum_{i=1}^{m} ({y_i}-\hat{y_i})^2 }$$<br>MES开根号就是RMSE，但是为什莫要这么做呢？？？<br>为了让数据更好描述，为了输入和输出的数量级在同一个量级上，这样就可以直接在描述模型的时候说模型的误差是多少。  </p>
+<h2 id="标准差（Standard-Deviation）"><a href="#标准差（Standard-Deviation）" class="headerlink" title="标准差（Standard Deviation）"></a>标准差（Standard Deviation）</h2><p>标准差是方差的算术平方根，也称均方差（mean square error），是各数据偏离平均数的距离的平均数，它是离均差平方和平均后的方根，用σ表示，标准差能反映一个数据集的离散程度。<br>$$<br>\begin{aligned}<br>    S^2 &amp;= \frac{1}{n} \sum_{i=1} ({x_i - \overline{X}}) ^2   \qquad \text{总体方差Var}  \\<br>    \sigma &amp;= \sqrt{\frac{1}{n} \sum_{i=1}^N (x_i - \mu)^2 }  \qquad \text{总体标准差SD}<br>\end{aligned}<br>$$</p>
+<p>公式本体很像，SD更多应该是在统计中使用，均方根误差有的地方又叫标准误差（和标准差就差一个字，我人都傻了）更多是表征回归模型的结果，<strong><em>这个在下边拟合度R的计算中会体现出来</em></strong>。<br>统计中经常又不能对整个集合进行统计，所以又会有样本方差，和总体方差又不一样，他将分母换成了n-1，这个不再细说。</p>
+<h1 id="平均绝对误差（MAE）"><a href="#平均绝对误差（MAE）" class="headerlink" title="平均绝对误差（MAE）"></a>平均绝对误差（MAE）</h1><p>$$  \frac{1}{m} \sum_{i=1}^{m} |{y_i}-\hat{y_i}|$$</p>
+<h1 id="拟合度R平方（R-Squared）"><a href="#拟合度R平方（R-Squared）" class="headerlink" title="拟合度R平方（R Squared）"></a>拟合度R平方（R Squared）</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>线性回归问题中，R-Squared 是用来衡量回归方程与真实样本输出之间的相似程度。  </p>
+<p>在上边描述的几种评价指标中，根据不同的问题，可能会有不一样的结果。比如预测股票，每股价格误差结果可能是几十，预测人口增长误差结果可能是上万。那么如果有一个统一的评价标准来描述就可以很直观的对模型的准确性有一个认识，这时候就出现了拟合度R方这个东西，<strong>相当于一个归一化的过程</strong>。  </p>
+<p>$$<br>\begin{aligned}<br>    R^2 = 1 - \frac{SS_{residual}}{SS_{total}}<br>\end{aligned}<br>$$  </p>
+<p>其中分子是Residual Sum of Squares 分母是 Total Sum of Squares<br>$$ \begin{aligned}<br>    SS_{residual} &amp;= \sum_i {(y_i - \hat{y}_i)^2}  \\<br>    \quad SS_t &amp;= \sum_i {(y_i - \overline{y}_i)^2}<br>\end{aligned}$$</p>
+<p>由以上各式很明显可以明白。  </p>
+<p>分子是使用模型计算得到的误差，真实值与预测值的平方差之和，类似于均方差MSE。<br>分母是没有任何模型，按照平均值计算得到的误差（相当于瞎猜的结果），真实值与均值的平方差之和，类似于方差 Var（也叫偏估计）。<br>其实，上下同除n，就会发现分子变成了MSE，分母变成了Var。  </p>
+<h2 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h2><p>根据 R-Squared 的取值，来判断模型的好坏：如果结果是 0，说明模型拟合效果很差；如果结果是 1，说明模型无错误。一般来说，R-Squared 越大，表示模型拟合效果越好。<br>R-Squared 反映的是大概有多准，因为，随着样本数量的增加，R-Square必然增加，无法真正定量说明准确程度，只能大概定量。</p>
+<h1 id="协方差（Covariance）"><a href="#协方差（Covariance）" class="headerlink" title="协方差（Covariance）"></a>协方差（Covariance）</h1><p>协方差在概率论和统计学中用于衡量两个变量的总体误差。而方差是协方差的一种特殊情况。<br>如果两个变量的变化趋势一致，也就是说如果其中一个大于自身的期望值，另外一个也大于自身的期望值，那么两个变量之间的协方差就是正值，反之为负值，所以他表征了两个变量的总体误差。<br>$$<br>{cov(X,Y)} = \frac{ \sum_{i=1}^n  ( X_i - \overline{X} ) ( Y_i - \overline{Y} ) }{n-1}<br>$$</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>scikit-learn中集成了很多工具，上边叙述的基本都可以直接调用方法实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error <span class="comment">#均方误差</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error <span class="comment">#平方绝对误差</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score<span class="comment">#R square</span></span><br><span class="line"><span class="comment">#调用</span></span><br><span class="line">mean_squared_error(y_test,y_predict)</span><br><span class="line">mean_absolute_error(y_test,y_predict)</span><br><span class="line">r2_score(y_test,y_predict)</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://blog.csdn.net/charlene_bo/article/details/70599183" target="_blank" rel="noopener">均方根值、均方根误差以及标准差</a><br><a href="https://blog.csdn.net/zrh_CSDN/article/details/81190001" target="_blank" rel="noopener">R-Squared</a></p>
+
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2020/01/24/回归常用评价指标/" title="回归常用评价指标">http://www.qm-k.xyz/2020/01/24/回归常用评价指标/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/算法/" rel="tag"># 算法</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/19/KNN（K-近临）简述/" rel="next" title="KNN（K-近临）简述">
+                  <i class="fa fa-chevron-left"></i> KNN（K-近临）简述
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/01/26/ORB特征提取与匹配/" rel="prev" title="ORB特征提取与匹配">
+                  ORB特征提取与匹配 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#均方误差（MES：Mean-Squared-Error）"><span class="nav-number">1.</span> <span class="nav-text">均方误差（MES：Mean Squared Error）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#均方根误差（RMSE：Root-Mean-Squard-Error）"><span class="nav-number">2.</span> <span class="nav-text">均方根误差（RMSE：Root Mean Squard Error）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#本体"><span class="nav-number">2.1.</span> <span class="nav-text">本体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#标准差（Standard-Deviation）"><span class="nav-number">2.2.</span> <span class="nav-text">标准差（Standard Deviation）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#平均绝对误差（MAE）"><span class="nav-number">3.</span> <span class="nav-text">平均绝对误差（MAE）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拟合度R平方（R-Squared）"><span class="nav-number">4.</span> <span class="nav-text">拟合度R平方（R Squared）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">4.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#性质"><span class="nav-number">4.2.</span> <span class="nav-text">性质</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#协方差（Covariance）"><span class="nav-number">5.</span> <span class="nav-text">协方差（Covariance）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">6.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+    
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>

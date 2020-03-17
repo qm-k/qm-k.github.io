@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="提起特征点检测就绕不开ORB这个经典的检测算法，下边对ORB特征识别进行简单的叙述。">
+<meta name="keywords" content="算法,CV">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ORB特征提取与匹配">
+<meta property="og:url" content="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="提起特征点检测就绕不开ORB这个经典的检测算法，下边对ORB特征识别进行简单的叙述。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/FAST_9.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/RRIEF_5.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/RRIEF.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/旋转一致性.png">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.791Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ORB特征提取与匹配">
+<meta name="twitter:description" content="提起特征点检测就绕不开ORB这个经典的检测算法，下边对ORB特征识别进行简单的叙述。">
+<meta name="twitter:image" content="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/FAST_9.png">
+  <link rel="canonical" href="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>ORB特征提取与匹配 | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">ORB特征提取与匹配
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-01-26 21:26:38" itemprop="dateCreated datePublished" datetime="2020-01-26T21:26:38+08:00">2020-01-26</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/算法/CV/" itemprop="url" rel="index"><span itemprop="name">CV</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/01/26/ORB特征提取与匹配/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2020/01/26/ORB特征提取与匹配/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>提起特征点检测就绕不开ORB这个经典的检测算法，下边对ORB特征识别进行简单的叙述。</p>
+<a id="more"></a>
+<h1 id="ORB原理"><a href="#ORB原理" class="headerlink" title="ORB原理"></a>ORB原理</h1><p>ORB特征是将FAST特征点的检测方法与BRIEF特征描述子综合起来，先通过FAST特征点检测图像上存在的可用特征点，检测到之后在特征点附近的像素上通过BRIEF特征描述算子对特征点进行描述，在匹配阶段通过BRIEF特征描述算子计算得到的特征向量进行相似度判断进行匹配。</p>
+<h1 id="特征点定义"><a href="#特征点定义" class="headerlink" title="特征点定义"></a>特征点定义</h1><p>图像特征点可以认为是图像中比较特殊的点，例如：阴影、高光、轮廓等等，在图像上<code>不平坦</code>的点，表现在图像矩阵上就是梯度高的像素，这样的一类像素点可以用来作为图像的特征进行识别和检测。  </p>
+<h1 id="特征点的检测（FAST）"><a href="#特征点的检测（FAST）" class="headerlink" title="特征点的检测（FAST）"></a>特征点的检测（FAST）</h1><p>ORB采用FAST（features from accelerated segment test）算法来检测特征点。这个定义基于特征点周围的图像灰度值，检测候选特征点周围一圈的像素值，如果候选点周围领域内有足够多的像素点与该候选点的灰度值差别够大，则认为该候选点为一个特征点。<br>$$<br>N = \sum_{ x \forall{circle(p)} } \left| I(x) - I(p) \right| &gt; \varepsilon_d<br>$$<br>其中$I(x)$为圆周上任意一点的灰度，$I(p)$为圆心的灰度，$\varepsilon_d$为灰度值差得阈值，如果N大于给定阈值，一般为周围圆圈点的四分之三，则认为点p是一个特征点。  </p>
+<img src="/2020/01/26/ORB特征提取与匹配/FAST_9.png" title="FAST">  
+<p>为了获得更快的结果，还采用了额外的加速办法。如果测试了候选点周围每隔90度角的4个点，应该至少有3个和候选点的灰度值差足够大，否则则不用再计算其他点，直接认为该候选点不是特征点。候选点周围的圆的选取半径是一个很重要的参数，这里为了简单高效，采用半径为3，共有16个周边像素需要比较。为了提高比较的效率，通常只使用N个周边像素来比较，也就是大家经常说的FAST-N。很多文献推荐FAST-9，作者的主页上有FAST-9、FAST-10、FAST-11、FAST-12，大家使用比较多的是FAST-9和FAST-12。  </p>
+<h1 id="计算特征描述子（BRIEF）"><a href="#计算特征描述子（BRIEF）" class="headerlink" title="计算特征描述子（BRIEF）"></a>计算特征描述子（BRIEF）</h1><p>得到特征点后我们需要以某种方式描述这些特征点的属性。这些属性的输出我们称之为该特征点的描述子（Feature DescritorS）。ORB采用BRIEF算法来计算一个特征点的描述子。  </p>
+<p>BRIEF算法的核心思想是在关键点P的周围以一定模式选取N个点对，把这N个点对的比较结果组合起来作为描述子。<br>在选取点对时有多种方法，设我们在特征点的邻域块大小为S×S内选择n个点对(p,q)：</p>
+<ul>
+<li>在图像块内平均采样；</li>
+<li>p和q都符合(0,125S2)的高斯分布；</li>
+<li>p符合(0,125S2)的高斯分布，而q符合(0,1100S2)的高斯分布；</li>
+<li>在空间量化极坐标下的离散位置随机采样</li>
+<li>把p固定为(0,0)，q在周围平均采样<img src="/2020/01/26/ORB特征提取与匹配/RRIEF_5.png" title="RRIEF5种情况">  
+
+</li>
+</ul>
+<p>假设我们选到的点对的流程为：</p>
+<ol>
+<li>以关键点P为圆心，以d为半径做圆O。</li>
+<li>在圆O内某一模式选取的N个点对。这里为方便说明，N=4，实际应用中N可以取很高。  <img src="/2020/01/26/ORB特征提取与匹配/RRIEF.png" title="RRIEF得到的4对算子">  </li>
+<li>定义四个点对为：<br>$$<br>P_1(A,B) ,P_2(A,B) ,P_3(A,B) ,P_4(A,B)<br>$$</li>
+<li>定义T运算：<br>$$<br>T_i(P_i(A,B))=<br>\begin{cases}<br>1\qquad I_A &gt; I_B\\<br>0\qquad I_B \leq I_B<br>\end{cases}<br>$$</li>
+<li>对图中的四个点对进行T运算，并组合成一个向量：<br>$$<br>T_1 (P_1(A,B))=1\\<br>T_2 (P_2(A,B))=0\\<br>T_3 (P_3(A,B))=1\\<br>T_4 (P_4(A,B))=1<br>$$<br>可得最终的描述子为$T=1101$<h2 id="理想的特征点描述子应该具备的属性"><a href="#理想的特征点描述子应该具备的属性" class="headerlink" title="理想的特征点描述子应该具备的属性"></a>理想的特征点描述子应该具备的属性</h2>人在观察一张图像的时候是不关心图像的摆放、明暗、大小的，人眼都可以准确的根据图像的特征对内容进行判断，相应的我们的描述子也应该有这样的特性，应该具有尺度一致性、旋转一致性等。<br>BRIEF的优点在于速度，缺点也相当明显：</li>
+</ol>
+<ul>
+<li>不具备旋转不变性。</li>
+<li>对噪声敏感</li>
+<li>不具备尺度不变性。<br>在在OpenCV中的ORB使用了图像金字塔解决了尺度一致性，下边来解决一下旋转一致性和噪声的问题。  <h2 id="旋转一致性"><a href="#旋转一致性" class="headerlink" title="旋转一致性"></a>旋转一致性</h2>在当前关键点P周围以一定模式选取N个点对，组合这N个点对的T操作的结果就为最终的描述子。当我们选取点对的时候，是以当前关键点为原点，以水平方向为X轴，以垂直方向为Y轴建立坐标系。当图片发生旋转时，坐标系不变，同样的取点模式取出来的点却不一样，计算得到的描述子也不一样，这是不符合我们要求的。因此我们需要重新建立坐标系，使新的坐标系可以跟随图片的旋转而旋转。这样我们以相同的取点模式取出来的点将具有一致性。  </li>
+</ul>
+<p>简而言之，就是让<strong>提取关键点的坐标系能够跟随图像旋转同时旋转</strong>（如下图），这样就可以保证在图像旋转前后提取的数据一致。  </p>
+<img src="/2020/01/26/ORB特征提取与匹配/旋转一致性.png" title="旋转一致性">  
+<p>而要实现旋转一致性，只要找到”质心”即可，因为质心是固定的，会随物体转动而转动。<br>我们设Q为重心，我们以$P \rightarrow Q$为x轴，以P为原点，这样旋转时坐标就可以跟着旋转，在不同的旋转角度下，我们以同一取点模式取出来的点就是一致的。  </p>
+<p>由高中物理可知，质量密度不均匀的物体质心坐标公式为：<br>二维<br>$$<br>\begin{aligned}<br>    \overline{x} = \frac{1}{M} \iint_D x \mu (x,y) d \sigma = \frac{\iint_D x \mu (x,y) d \sigma }{\iint_D \mu (x,y) d \sigma}  \\<br>    \overline{y} = \frac{1}{M} \iint_D y \mu (x,y) d \sigma = \frac{\iint_D y \mu (x,y) d \sigma }{\iint_D \mu (x,y) d \sigma}<br>\end{aligned}<br>$$<br>三维也同理，但是类比到图像上只需要二维即可，将像素的像素值作为其质量：<br>$$<br>M = \sum_{X=-R}^{R} \sum_{Y=-R}^{R} I(x,y)\\<br>M_{\overline{x}} = \sum_{X=-R}^{R} \sum_{Y=-R}^{R} xI(x,y)\\<br>M_{\overline{y}} = \sum_{X=-R}^{R} \sum_{Y=-R}^{R} yI(x,y)\\<br>Q_X = \frac{M_{\overline{x}}}{M},Q_Y = \frac{M_{\overline{y}}}{M} \qquad \text{X坐标，Y坐标}<br>$$<br>可以得到“质心”的坐标和角度<br>$$<br>O = \left( \frac{M_{\overline{x}}}{M} , \frac{M_{\overline{y}}}{M} \right) \qquad \text{坐标}\\<br>\theta = atan2( \frac{M_{\overline{x}}}{M_{\overline{y}}} ) \qquad \text{与x轴正向夹角}<br>$$</p>
+<h2 id="滤波"><a href="#滤波" class="headerlink" title="滤波"></a>滤波</h2><p>BRIEF中，采用了9x9的高斯算子进行滤波，可以一定程度上解决噪声敏感问题，但是单纯的一个滤波是不够的，在ORB中我们通过对生成的点对附近的图像进行积分代替对应点的灰度值。<br>$$<br>I(A) = \sum_{x=-r}^{r} \sum_{y=-r}^{r} I(x,y)<br>$$</p>
+<h1 id="匹配"><a href="#匹配" class="headerlink" title="匹配"></a>匹配</h1><p>计算两个特征点描述子之间的相似度即可，例如特征点A、B：<br>A = 1001110110<br>B = 0110110010<br>共计10位，其中5位相同，所以此时的相似度为50%，此时我们如果设置一个阈值即可判断A、B是否为匹配的。</p>
+<h2 id="汉明距离"><a href="#汉明距离" class="headerlink" title="汉明距离"></a>汉明距离</h2><p>两个等长字符串之间的汉明距离是两个字符串对应位置的不同字符的个数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hammingDistance</span><span class="params">(s1, s2)</span>:</span></span><br><span class="line">    <span class="string">"""Return the Hamming distance between equal-length sequences"""</span></span><br><span class="line">    <span class="keyword">if</span> len(s1) != len(s2):</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"Undefined for sequences of unequal length"</span>)</span><br><span class="line">    <span class="keyword">return</span> sum(el1 != el2 <span class="keyword">for</span> el1, el2 <span class="keyword">in</span> zip(s1, s2))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hammingDistance</span><span class="params">(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i = x ^ y;</span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((i &amp; <span class="number">1</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                count++;</span><br><span class="line">            &#125;</span><br><span class="line">            i = i &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>特征点类：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">KeyPoint</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    Point2f  pt;  <span class="comment">//坐标</span></span><br><span class="line">    <span class="keyword">float</span>  size; <span class="comment">//特征点邻域直径</span></span><br><span class="line">    <span class="keyword">float</span>  angle; <span class="comment">//特征点的方向，值为[零,三百六十)，负值表示不使用</span></span><br><span class="line">    <span class="keyword">float</span>  response;</span><br><span class="line">    <span class="keyword">int</span>  octave; <span class="comment">//特征点所在的图像金字塔的组</span></span><br><span class="line">    <span class="keyword">int</span>  class_id; <span class="comment">//用于聚类的id</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>存放匹配结果的结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DMatch</span></span></span><br><span class="line"><span class="class">&#123;</span><span class="comment">//三个构造函数</span></span><br><span class="line">    DMatch():</span><br><span class="line">queryIdx(<span class="number">-1</span>),trainIdx(<span class="number">-1</span>),imgIdx(<span class="number">-1</span>),distance(<span class="built_in">std</span>::numeric_limits&lt;<span class="keyword">float</span>&gt;::max()) &#123;&#125;</span><br><span class="line">    DMatch(<span class="keyword">int</span>  _queryIdx, <span class="keyword">int</span>  _trainIdx, <span class="keyword">float</span>  _distance ) :</span><br><span class="line">queryIdx( _queryIdx),trainIdx( _trainIdx), imgIdx(<span class="number">-1</span>),distance( _distance) &#123;&#125;</span><br><span class="line">    DMatch(<span class="keyword">int</span>  _queryIdx, <span class="keyword">int</span>  _trainIdx, <span class="keyword">int</span>  _imgIdx, <span class="keyword">float</span>  _distance ) :                   </span><br><span class="line">queryIdx(_queryIdx), trainIdx( _trainIdx), imgIdx( _imgIdx),distance( _distance) &#123;&#125;</span><br><span class="line">    intqueryIdx;  <span class="comment">//此匹配对应的查询图像的特征描述子索引</span></span><br><span class="line">    inttrainIdx;   <span class="comment">//此匹配对应的训练(模板)图像的特征描述子索引</span></span><br><span class="line">    intimgIdx;    <span class="comment">//训练图像的索引(若有多个)</span></span><br><span class="line">    <span class="keyword">float</span> distance;  <span class="comment">//两个特征向量之间的欧氏距离，越小表明匹配度越高。</span></span><br><span class="line">    booloperator &lt; (<span class="keyword">const</span> DMatch &amp;m) <span class="keyword">const</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>完整代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/core/core.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/features2d/features2d.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;opencv2/highgui/highgui.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> cv;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (argc != <span class="number">3</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; <span class="string">"usage: feature_extraction img1 img2"</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//-- 读取图像</span></span><br><span class="line">	Mat img_1 = imread(argv[<span class="number">1</span>]);<span class="comment">//, CV_LOAD_IMAGE_COLOR</span></span><br><span class="line">	Mat img_2 = imread(argv[<span class="number">2</span>]);<span class="comment">//, CV_LOAD_IMAGE_COLOR</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">//- 初始化detector检测器descriptor描述子matcher匹配器，并声明怕匹配使用汉明距离</span></span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;KeyPoint&gt; keypoints_1, keypoints_2;</span><br><span class="line">	Mat descriptors_1, descriptors_2;</span><br><span class="line">	Ptr&lt;FeatureDetector&gt; detector = ORB::create();</span><br><span class="line">	Ptr&lt;DescriptorExtractor&gt; descriptor = ORB::create();</span><br><span class="line">	Ptr&lt;DescriptorMatcher&gt; matcher = DescriptorMatcher::create(<span class="string">"BruteForce-Hamming"</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//-- 第一步:检测 Oriented FAST 特征点位置</span></span><br><span class="line">	detector-&gt;detect(img_1, keypoints_1);</span><br><span class="line">	detector-&gt;detect(img_2, keypoints_2);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//-- 第二步:计算特征点 BRIEF 描述子</span></span><br><span class="line">	descriptor-&gt;compute(img_1, keypoints_1, descriptors_1);</span><br><span class="line">	descriptor-&gt;compute(img_2, keypoints_2, descriptors_2);</span><br><span class="line"></span><br><span class="line">	Mat outimg1;</span><br><span class="line">	drawKeypoints(img_1, keypoints_1, outimg1, Scalar::all(<span class="number">-1</span>), DrawMatchesFlags::DEFAULT);</span><br><span class="line">	imshow(<span class="string">"ORB特征点"</span>, outimg1);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//-- 第三步:对两幅图像中的BRIEF描述子进行匹配，使用 Hamming 距离</span></span><br><span class="line">	<span class="comment">//-- 并创建DMatch对象存储匹配的结果</span></span><br><span class="line">	<span class="built_in">vector</span>&lt;DMatch&gt; matches;</span><br><span class="line">	matcher-&gt;match(descriptors_1, descriptors_2, matches);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//-- 第四步:匹配点对筛选，设置匹配度的上下限的初始值，通过遍历描述子的距离更新为实际的上下限最值</span></span><br><span class="line">	<span class="keyword">double</span> min_dist = <span class="number">10000</span>, max_dist = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//找出所有匹配之间的最小距离和最大距离, 即是最相似的和最不相似的两组点之间的距离</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; descriptors_1.rows; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">double</span> dist = matches[i].distance;</span><br><span class="line">		<span class="keyword">if</span> (dist &lt; min_dist) min_dist = dist;</span><br><span class="line">		<span class="keyword">if</span> (dist &gt; max_dist) max_dist = dist;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 使用max_element和min_element STL找出第一个最大（最小）值，与上边循环功能相同</span></span><br><span class="line">	min_dist = min_element(matches.begin(), matches.end(), [](<span class="keyword">const</span> DMatch&amp; m1, <span class="keyword">const</span> DMatch&amp; m2) &#123;<span class="keyword">return</span> m1.distance &lt; m2.distance; &#125;)-&gt;distance;</span><br><span class="line">	max_dist = max_element(matches.begin(), matches.end(), [](<span class="keyword">const</span> DMatch&amp; m1, <span class="keyword">const</span> DMatch&amp; m2) &#123;<span class="keyword">return</span> m1.distance &lt; m2.distance; &#125;)-&gt;distance;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"-- Max dist : %f \n"</span>, max_dist);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"-- Min dist : %f \n"</span>, min_dist);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//当描述子之间的距离大于两倍的最小距离时,即认为匹配有误.但有时候最小距离会非常小,设置一个经验值30作为下限，进行限幅.</span></span><br><span class="line">	<span class="comment">//将有效的匹配结果存入good_matches</span></span><br><span class="line">	<span class="built_in">std</span>::<span class="built_in">vector</span>&lt; DMatch &gt; good_matches;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; descriptors_1.rows; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (matches[i].distance &lt;= max(<span class="number">2</span> * min_dist, <span class="number">30.0</span>))</span><br><span class="line">		&#123;</span><br><span class="line">			good_matches.push_back(matches[i]);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//-- 第五步:绘制匹配结果</span></span><br><span class="line">	Mat img_match;</span><br><span class="line">	Mat img_goodmatch;</span><br><span class="line">	drawMatches(img_1, keypoints_1, img_2, keypoints_2, matches, img_match);</span><br><span class="line">	drawMatches(img_1, keypoints_1, img_2, keypoints_2, good_matches, img_goodmatch);</span><br><span class="line">	imshow(<span class="string">"所有匹配点对"</span>, img_match);</span><br><span class="line">	imshow(<span class="string">"优化后匹配点对"</span>, img_goodmatch);</span><br><span class="line">	waitKey(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/" title="ORB特征提取与匹配">http://www.qm-k.xyz/2020/01/26/ORB特征提取与匹配/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/算法/" rel="tag"># 算法</a>
+            
+              <a href="/tags/CV/" rel="tag"># CV</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/24/回归常用评价指标/" rel="next" title="回归常用评价指标">
+                  <i class="fa fa-chevron-left"></i> 回归常用评价指标
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/01/31/线性回归/" rel="prev" title="线性回归">
+                  线性回归 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ORB原理"><span class="nav-number">1.</span> <span class="nav-text">ORB原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特征点定义"><span class="nav-number">2.</span> <span class="nav-text">特征点定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#特征点的检测（FAST）"><span class="nav-number">3.</span> <span class="nav-text">特征点的检测（FAST）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算特征描述子（BRIEF）"><span class="nav-number">4.</span> <span class="nav-text">计算特征描述子（BRIEF）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#理想的特征点描述子应该具备的属性"><span class="nav-number">4.1.</span> <span class="nav-text">理想的特征点描述子应该具备的属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#旋转一致性"><span class="nav-number">4.2.</span> <span class="nav-text">旋转一致性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#滤波"><span class="nav-number">4.3.</span> <span class="nav-text">滤波</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#匹配"><span class="nav-number">5.</span> <span class="nav-text">匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#汉明距离"><span class="nav-number">5.1.</span> <span class="nav-text">汉明距离</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">6.</span> <span class="nav-text">代码</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+    
+      
+<script type="text/x-mathjax-config">
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="前言安装了vscode之后，写代码和丝滑流畅，脱离臃肿的Visual Studio IDE，优雅的进行断点调试，直接进行编译与运行，下边记录一下配置的过程。">
+<meta name="keywords" content="code,奇淫巧计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="让vscode成为c&#x2F;c++编译器">
+<meta property="og:url" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="前言安装了vscode之后，写代码和丝滑流畅，脱离臃肿的Visual Studio IDE，优雅的进行断点调试，直接进行编译与运行，下边记录一下配置的过程。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/install_mingw.PNG">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/path.PNG">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/add_path.PNG">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/successfu_linstall.PNG">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/run_code.PNG">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/run_in_terminal.PNG">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/debug.PNG">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.861Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="让vscode成为c&#x2F;c++编译器">
+<meta name="twitter:description" content="前言安装了vscode之后，写代码和丝滑流畅，脱离臃肿的Visual Studio IDE，优雅的进行断点调试，直接进行编译与运行，下边记录一下配置的过程。">
+<meta name="twitter:image" content="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/install_mingw.PNG">
+  <link rel="canonical" href="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>让vscode成为c/c++编译器 | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">让vscode成为c/c++编译器
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-31 17:54:00" itemprop="dateCreated datePublished" datetime="2019-08-31T17:54:00+08:00">2019-08-31</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/31/让vscode成为c-c-编译器/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2019/08/31/让vscode成为c-c-编译器/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>安装了vscode之后，写代码和丝滑流畅，脱离臃肿的<code>Visual Studio IDE</code>，优雅的进行断点调试，直接进行编译与运行，下边记录一下配置的过程。</p>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>vscode本身是不带编译器的，无论通过什么方式进行编译和运行都是需要外部的编译器的，只需要提前安装好对应的编译器，并设置好环境变量，vscode就可以调用到。  </p>
+<p>vscode可以通过终端<em>使用命令行</em>进行编译，也可以借助<code>code runner</code>进行简化编译。</p>
+<h1 id="安装编译器"><a href="#安装编译器" class="headerlink" title="安装编译器"></a>安装编译器</h1><p>如果使用<code>code runner</code>进行编译运行的话是需要安装g++/gcc的，如果是Linux直接命令行安装就行，win10的话需要提前安装并设置环境变量，通常选择安装<a href="https://sourceforge.net/projects/mingw/files/latest/download?source=files" target="_blank" rel="noopener">MinGW</a>或者<a href="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/" target="_blank" rel="noopener">MinGW-w64</a>，推荐使用MinGW-w64，这两个其实差不多，但是听说MinGW-w64是MinGW的升级版，更强更骚，总之装MinGW-w64就OK。  </p>
+<p>安装MinGW-w64的过程没什莫要说的，在安装过程中注意将<code>arch</code>改为x86_64，如下图：  </p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/install_mingw.PNG" title="修改"> 
+
+<p>win10的话之后要添加一下环境变量，将安装路径下的<code>bin</code>文件夹与<code>includ</code>文件夹分别加入系统环境变量的<code>Path</code>与<code>C_INCLUDE_PATH</code> ( 这个需要自己新建，也可以为c++设立一个c++的头文件搜索路径<code>CPLUS_INCLUDE_PATH</code> )  </p>
+<p>安装目录：  </p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/path.PNG" title="安装目录">  
+<p>添加路径：  </p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/add_path.PNG" title="添加路径">
+
+<p>安装完成后，测试一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">g++ -v</span><br><span class="line">gcc -v</span><br></pre></td></tr></table></figure>
+
+<p>如下表示安装正常</p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/successfu_linstall.PNG" title="安装完成">
+
+<h1 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h1><p>去左侧的插件商店中所搜一下 <code>C/C++</code>与<code>Code runner</code> 这两个插件，装上，这时候在右上角就能出现一个能直接运行的三角：  </p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/run_code.PNG" title="运行按钮">  
+
+<p>但是这时候运行不是在vscode集成的控制台里的，我们需要修改一下设置：文件&gt;首选项&gt;设置&gt;用户设置&gt;拓展&gt;Run Code Configuration（直接搜Run Code Configuration往下翻也能找到）  </p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/run_in_terminal.PNG" title="设置">  
+<p>下边测试一下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;bits/stdc++.h&gt;  </span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span>&lt;&lt;<span class="string">"hello world"</span>&lt;&lt;<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是，runcode只是帮我们运行了<code>g++ xxx.cpp -o xxx.exe</code>，而不会加别的东西，也就是说，如果我们调用了opencv的库，这时候编译会出错的，因为他不会给我们加上<code>-lopencv</code>,这个时候我们就依然需要在命令行里手写g++了。</p>
+<p>ps：<code>bits/stdc++.h</code>是一个万能c++库，他包含了基本所有常用的c++库，但是也会造成编译慢的问题，能不用还是不要用。</p>
+<h1 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h1><p>要实现断点调试需要先在工作区目录下新建一个<code>.vscode</code>文件夹（win10下如果不能新建<code>.</code>开头的文件夹，重命名成<code>.vscode.</code>就可以解决问题），添加两个文件， <code>launch.json</code> 和 <code>tasks.json</code><br>将一下代码分别加入两个文件。<br>launch.json</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"version"</span>: <span class="string">"0.2.0"</span>,</span><br><span class="line">    <span class="attr">"configurations"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"C/C++"</span>,</span><br><span class="line">            <span class="attr">"type"</span>: <span class="string">"cppdbg"</span>,</span><br><span class="line">            <span class="attr">"request"</span>: <span class="string">"launch"</span>,</span><br><span class="line">            <span class="attr">"program"</span>: <span class="string">"$&#123;fileDirname&#125;/$&#123;fileBasenameNoExtension&#125;.exe"</span>,</span><br><span class="line">            <span class="attr">"args"</span>: [],</span><br><span class="line">            <span class="attr">"stopAtEntry"</span>: <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"cwd"</span>: <span class="string">"$&#123;workspaceFolder&#125;"</span>,</span><br><span class="line">            <span class="attr">"environment"</span>: [],</span><br><span class="line">            <span class="attr">"externalConsole"</span>: <span class="literal">false</span>,</span><br><span class="line">            <span class="attr">"MIMode"</span>: <span class="string">"gdb"</span>,</span><br><span class="line">            <span class="attr">"miDebuggerPath"</span>: <span class="string">"D:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/gdb.exe"</span>,</span><br><span class="line">            <span class="attr">"preLaunchTask"</span>: <span class="string">"g++"</span>,</span><br><span class="line">            <span class="attr">"setupCommands"</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">"description"</span>: <span class="string">"Enable pretty-printing for gdb"</span>,</span><br><span class="line">                    <span class="attr">"text"</span>: <span class="string">"-enable-pretty-printing"</span>,</span><br><span class="line">                    <span class="attr">"ignoreFailures"</span>: <span class="literal">true</span></span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">        &#125;,</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>miDebuggerPath</code> 参数是用以搜索mingw安装的调试器(<code>gdb.exe</code>)的 ，所以这个路径要设置正确<br>ps : <code>externalConsole</code>参数为<code>fales</code> 时才是在vscode集成的命令行中进行调试。 </p>
+<p>tasks.json</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"version"</span>: <span class="string">"2.0.0"</span>,</span><br><span class="line">    <span class="attr">"command"</span>: <span class="string">"g++"</span>,</span><br><span class="line">    <span class="attr">"args"</span>: [</span><br><span class="line">        <span class="string">"-g"</span>,</span><br><span class="line">        <span class="string">"$&#123;file&#125;"</span>,</span><br><span class="line">        <span class="string">"-o"</span>,</span><br><span class="line">        <span class="string">"$&#123;fileDirname&#125;/$&#123;fileBasenameNoExtension&#125;.exe"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"problemMatcher"</span>: &#123;</span><br><span class="line">        <span class="attr">"owner"</span>: <span class="string">"cpp"</span>,</span><br><span class="line">        <span class="attr">"fileLocation"</span>: [</span><br><span class="line">            <span class="string">"relative"</span>,</span><br><span class="line">            <span class="string">"$&#123;workspaceRoot&#125;"</span></span><br><span class="line">        ],</span><br><span class="line">        <span class="attr">"pattern"</span>: &#123;</span><br><span class="line">            <span class="attr">"regexp"</span>: <span class="string">"^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$"</span>,</span><br><span class="line">            <span class="attr">"file"</span>: <span class="number">1</span>,</span><br><span class="line">            <span class="attr">"line"</span>: <span class="number">2</span>,</span><br><span class="line">            <span class="attr">"column"</span>: <span class="number">3</span>,</span><br><span class="line">            <span class="attr">"severity"</span>: <span class="number">4</span>,</span><br><span class="line">            <span class="attr">"message"</span>: <span class="number">5</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"group"</span>: &#123;</span><br><span class="line">        <span class="attr">"kind"</span>: <span class="string">"build"</span>,</span><br><span class="line">        <span class="attr">"isDefault"</span>: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时可以按 <code>ctrl+shift+b</code> 直接调用配置好的g++ task 编译程序而不运行程序，但是要注意如果要单步运行就要有断点存在，不然在左侧的<code>debug</code>窗口中没有变量显示，也不能暂停，至少我在实际使用中是这样的情况。  </p>
+<img src="/2019/08/31/让vscode成为c-c-编译器/debug.PNG" title="debug">
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/" title="让vscode成为c/c++编译器">http://www.qm-k.xyz/2019/08/31/让vscode成为c-c-编译器/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/code/" rel="tag"># code</a>
+            
+              <a href="/tags/奇淫巧计/" rel="tag"># 奇淫巧计</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/08/24/linux调用动态链接库（-so）的方法/" rel="next" title="linux调用动态链接库（.so）的方法">
+                  <i class="fa fa-chevron-left"></i> linux调用动态链接库（.so）的方法
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/05/git添加tag/" rel="prev" title="git添加tag">
+                  git添加tag <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装编译器"><span class="nav-number">3.</span> <span class="nav-text">安装编译器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装插件"><span class="nav-number">4.</span> <span class="nav-text">安装插件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#调试"><span class="nav-number">5.</span> <span class="nav-text">调试</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>

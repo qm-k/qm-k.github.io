@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="工作空间工作空间（workspace）是一个存放开发工程的文件夹，类似于vs新建的工程目录。">
+<meta name="keywords" content="ROS系列教程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ROS工作空间与功能包">
+<meta property="og:url" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="工作空间工作空间（workspace）是一个存放开发工程的文件夹，类似于vs新建的工程目录。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_16-57-14.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_16-58-45.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-04-28.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-32-23.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-38-46.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-43-09.png">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ROS工作空间与功能包">
+<meta name="twitter:description" content="工作空间工作空间（workspace）是一个存放开发工程的文件夹，类似于vs新建的工程目录。">
+<meta name="twitter:image" content="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_16-57-14.png">
+  <link rel="canonical" href="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>ROS工作空间与功能包 | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">ROS工作空间与功能包
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-09 16:23:10" itemprop="dateCreated datePublished" datetime="2020-02-09T16:23:10+08:00">2020-02-09</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/02/09/工作空间与功能包/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2020/02/09/工作空间与功能包/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="工作空间"><a href="#工作空间" class="headerlink" title="工作空间"></a>工作空间</h1><p>工作空间（workspace）是一个存放开发工程的文件夹，类似于vs新建的工程目录。</p>
+<a id="more"></a>
+<ol>
+<li>src：代码空间 真正开发时关注的地方</li>
+<li>build：编译空间 编译的中间文件，基为二进制文件，基本用不到</li>
+<li>devel：开发空间 调试时的可执行文件存放的地方，<code>workspace/devel/lib/包名/可执行程序</code></li>
+<li>install：安装空间 用来提交的可执行程序<h2 id="创建工作空间"><a href="#创建工作空间" class="headerlink" title="创建工作空间"></a>创建工作空间</h2><table>
+<thead>
+<tr>
+<th align="center">操作</th>
+<th align="center">命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">创建工作空间</td>
+<td align="center"># mkdir -p ~/catkin_ws/src <br> # cd ~/catkin_ws/src <br> # catkin_init_workspace <br> # catkin_ws就是工程名，所以是可以随意起名的，但是src不可以，因为他是系统规定的目录结构($会引发bug所以这里暂时用#替代)</td>
+</tr>
+<tr>
+<td align="center">编译工作空间</td>
+<td align="center"># cd ~/catkin_ws/src <br> # catkin_make</td>
+</tr>
+<tr>
+<td align="center">设置环境变量</td>
+<td align="center">$ source devel/setup.bash</td>
+</tr>
+<tr>
+<td align="center">检查环境变量</td>
+<td align="center">$ echo #ROS_PACKAGE_PATH</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<p>创建并编译工作空间:  </p>
+<img src="/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_16-57-14.png" title="创建并编译工作空间">  
+<p>生效环境变量，同时进行检查:  </p>
+<img src="/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_16-58-45.png" title="生效环境变量，同时进行检查">  
+<p>生成的目录结构：</p>
+<img src="/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-04-28.png" title="生成的目录结构">
+<p>这时候会发现缺少install文件夹,如果需要生成，这个时候需要使用：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ catkin_make install</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建功能包"><a href="#创建功能包" class="headerlink" title="创建功能包"></a>创建功能包</h1><table>
+<thead>
+<tr>
+<th align="center">操作</th>
+<th align="center">命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">创建功能包</td>
+<td align="center"># cd ~/catkin_ws/src <br> # catkin_create_pkg &lt; package_name &gt; [ depend1 ] [ depend2] ···</td>
+</tr>
+<tr>
+<td align="center">编译功能包</td>
+<td align="center"># cd ~/catkin_ws <br> # catkin_make <br> # source ~/catkin_ws/devel/setup.bash</td>
+</tr>
+</tbody></table>
+<p>编译需要在工作空间的根目录下进行，而生成功能包则在需要生成的目录中进行生成。<br>在命令中&lt;&gt;是必须有的参数，[]是可选的，在catkin_create_pkg中可以通过在后边加上depend来指定依赖。  </p>
+<img src="/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-32-23.png" title="生成新的功能包">  
+<p>其中roscpp是cpp的依赖、rospy是python的依赖、std_msgs是标准的消息类型。<br>最后生成的目录：  </p>
+<img src="/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-38-46.png" title="生成新的功能包">  
+<p>进行编译：  </p>
+<img src="/2020/02/09/工作空间与功能包/Snipaste_2020-02-09_17-43-09.png" title="编译">  
+<p>最后可以通过<code>$ source devel/setup.bash</code>来更新环境变量，告诉系统你创建了新的功能包。<br>其实系统是通过<code>ROS_PACKAGE_PATH</code>变量来找到系统中的功能包的，而<code>setup.bash</code>则是通过更新这个环境变量来使系统能找到新创建的包。<br>如果要查找系统中所有的包，可以像下边这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo #ROS_PACKAGE_PATH </span><br><span class="line">/root/catkin_ws/src:/opt/ros/melodic/share</span><br></pre></td></tr></table></figure>
+
+<h2 id="package-xml"><a href="#package-xml" class="headerlink" title="package.xml"></a>package.xml</h2><p>在生成新的功能包时会生成除了src、includ、cmakelist.txt这些必备的文件和目录之外，还有一个必要的文件就是package.xml文件.<br>包含了功能包的作者信息和一些版权信息，包括作者的名字、邮箱，还有包的版本号，作者的一些注释等等.<br>同时最重要的就是会有依赖包的声明,在编译工程的时候,系统会通过package.xml文件检索依赖,如果检索不到就会报错.<br>之后如果再依赖新的包的话也可以在文件后边再新加依赖项.  </p>
+<p>同时要记住一点,<strong>在同一个工作空间中是不允许有同名的功能包的,但是在不同的工作空间中是可以的</strong></p>
+
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2020/02/09/工作空间与功能包/" title="ROS工作空间与功能包">http://www.qm-k.xyz/2020/02/09/工作空间与功能包/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/ROS系列教程/" rel="tag"># ROS系列教程</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/08/pip3的安装与更新/" rel="next" title="pip3的安装与更新">
+                  <i class="fa fa-chevron-left"></i> pip3的安装与更新
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/02/10/Publisher的实现/" rel="prev" title="Publisher的实现">
+                  Publisher的实现 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#工作空间"><span class="nav-number">1.</span> <span class="nav-text">工作空间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建工作空间"><span class="nav-number">1.1.</span> <span class="nav-text">创建工作空间</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#创建功能包"><span class="nav-number">2.</span> <span class="nav-text">创建功能包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#package-xml"><span class="nav-number">2.1.</span> <span class="nav-text">package.xml</span></a></li></ol></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>

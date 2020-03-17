@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="使能一个PWM，并产生一个呼吸灯。">
+<meta name="keywords" content="嵌入式搬砖手册">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CubeMX之PWM">
+<meta property="og:url" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="使能一个PWM，并产生一个呼吸灯。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-35-44.jpg">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-39-15.jpg">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-54-40.jpg">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_20-02-10.jpg">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_20-08-50.jpg">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_20-47-40.jpg">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/ADS00003.BMP">
+<meta property="og:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/ADS00002.BMP">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.741Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CubeMX之PWM">
+<meta name="twitter:description" content="使能一个PWM，并产生一个呼吸灯。">
+<meta name="twitter:image" content="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-35-44.jpg">
+  <link rel="canonical" href="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>CubeMX之PWM | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">CubeMX之PWM
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-26 16:31:05" itemprop="dateCreated datePublished" datetime="2019-10-26T16:31:05+08:00">2019-10-26</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/嵌入式/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/嵌入式/CubeMX/" itemprop="url" rel="index"><span itemprop="name">CubeMX</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/10/26/CubeMX之PWM/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2019/10/26/CubeMX之PWM/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>使能一个PWM，并产生一个呼吸灯。  </p>
+<a id="more"></a>
+<p>脉冲宽度调制（PWM），是英文“Pulse Width Modulation”的缩写，简称脉宽调试。是利用微处理器的数字输出来对模拟电路进行控制的一种非常有效的技术。广泛应用在从测量、通信到功率控制与变换的许多领域中。<br>stm32中有定时器会不停的自加，直到等于Pulse值就会变为低电平，而当等于ARR寄存器(Period)的值时，定时器就会重新清零，不停的循环往复。<br>更详细的原理本文不再叙述，涉及到的PWM模式问题以及死区、DMA等等问题，之后单独开一篇文章讲述，这里不再叙述。<br>对于PWM更详细概念在<a href>PWM的概念</a>一节中进行叙述，这里只讲解如何使用。<br>同<a href="https://www.qm-k.xyz/2019/10/25/CubeMX%E4%B9%8BGPIO/">使能一个GPIO章节</a>的配置,创建工程、使能外部高速晶振、配置时钟树，最后打开Timers，选择要用来输出PWM的定时器，并选择要输出的通道，一般一个定时器都有四个通道(当然也有两通道的，或者不能用作输出的)：  </p>
+<img src="/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-35-44.jpg">  
+<p>只有高级定时器可以输出PWM，普通定时器是不能输出的，这个在cubemx中可以很明确的看出来，像下面这个就是不能用作输出的，只能用作定时：  </p>
+<img src="/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-39-15.jpg">  
+<p>下边主要讲一下配置PWM输出的参数：  </p>
+<img src="/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_19-54-40.jpg">  
+<p>由于我使用的板子是F407的，配置系统时钟为168MHz，通过查看<code>stm32f407xx.h</code>，可以确定TIM1挂载在APB2,时钟频率为168MHz。  </p>
+<img src="/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_20-02-10.jpg">  
+<img src="/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_20-08-50.jpg">  
+<p>此处设置为1680分频。经过分频后的时钟频率为100000Hz，若要设置PWM周期为20ms,则ARR寄存器的值为2000-1。其他参数为默认不用修改。其中Pulse的为设置脉宽，即为捕获/比较寄存器（TIMx_CCRx）。通过修改它的值可以修改占空比。</p>
+<img src="/2019/10/26/CubeMX之PWM/Snipaste_2019-11-01_20-47-40.jpg">  
+<p>生成代码，添加应用程序：<br>在主函数中可以看到有<code>MX_TIM1_Init()</code>函数，右键<code>go to definition</code>,可以看到初始化函数(固件库版本不同可能不一致，但是不影响，原理一样)：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">/* TIM1 init function */</span><br><span class="line">void MX_TIM1_Init(void)</span><br><span class="line">&#123;</span><br><span class="line">  TIM_MasterConfigTypeDef sMasterConfig = &#123;0&#125;;</span><br><span class="line">  TIM_OC_InitTypeDef sConfigOC = &#123;0&#125;;</span><br><span class="line">  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = &#123;0&#125;;</span><br><span class="line"></span><br><span class="line">  htim1.Instance = TIM1;</span><br><span class="line">  htim1.Init.Prescaler = 1680-1;</span><br><span class="line">  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;</span><br><span class="line">  htim1.Init.Period = 20000-1;          //这里为了让波形更明显调大了值，真实使用不会这莫大，要根据实际的控制频率来设置</span><br><span class="line">  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;</span><br><span class="line">  htim1.Init.RepetitionCounter = 0;</span><br><span class="line">  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;</span><br><span class="line">  if (HAL_TIM_PWM_Init(&amp;htim1) != HAL_OK)</span><br><span class="line">  &#123;</span><br><span class="line">    Error_Handler();</span><br><span class="line">  &#125;</span><br><span class="line">  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;</span><br><span class="line">  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;</span><br><span class="line">  if (HAL_TIMEx_MasterConfigSynchronization(&amp;htim1, &amp;sMasterConfig) != HAL_OK)</span><br><span class="line">  &#123;</span><br><span class="line">    Error_Handler();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">//就是这一段，很重要</span><br><span class="line">  sConfigOC.OCMode = TIM_OCMODE_PWM1;</span><br><span class="line">  sConfigOC.Pulse = 0;</span><br><span class="line">  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;</span><br><span class="line">  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;</span><br><span class="line">  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;</span><br><span class="line">  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;</span><br><span class="line">  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;</span><br><span class="line">  if (HAL_TIM_PWM_ConfigChannel(&amp;htim1, &amp;sConfigOC, TIM_CHANNEL_1) != HAL_OK)</span><br><span class="line">  &#123;</span><br><span class="line">    Error_Handler();</span><br><span class="line">  &#125;</span><br><span class="line">//</span><br><span class="line"></span><br><span class="line">  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;</span><br><span class="line">  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;</span><br><span class="line">  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;</span><br><span class="line">  sBreakDeadTimeConfig.DeadTime = 0;</span><br><span class="line">  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;</span><br><span class="line">  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;</span><br><span class="line">  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;</span><br><span class="line">  if (HAL_TIMEx_ConfigBreakDeadTime(&amp;htim1, &amp;sBreakDeadTimeConfig) != HAL_OK)</span><br><span class="line">  &#123;</span><br><span class="line">    Error_Handler();</span><br><span class="line">  &#125;</span><br><span class="line">  HAL_TIM_MspPostInit(&amp;htim1);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上边那一串代码中用注释框起来的代码就是我们在应用程序中要用的代码了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">	void user_pwm_setvalue(uint16_t value)</span><br><span class="line">&#123;</span><br><span class="line">    TIM_OC_InitTypeDef sConfigOC;</span><br><span class="line">    sConfigOC.OCMode = TIM_OCMODE_PWM1;</span><br><span class="line">    sConfigOC.Pulse = value;                //Pulse就是用于修改脉冲宽度的变量，其他的直接照着初始化代码复制即可</span><br><span class="line">    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;</span><br><span class="line">    sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;</span><br><span class="line">    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;</span><br><span class="line">    sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;</span><br><span class="line">    sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;</span><br><span class="line">    if (HAL_TIM_PWM_ConfigChannel(&amp;htim1, &amp;sConfigOC, TIM_CHANNEL_1) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">      Error_Handler();</span><br><span class="line">    &#125;</span><br><span class="line">    HAL_TIM_PWM_Start(&amp;htim1, TIM_CHANNEL_1);//开启PWM输出，在cubemx自动生成的初始化中是</span><br><span class="line">                                             //不会默认使能输出的，这一点一定要注意  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在main()函数中添加HAL_TIM_PWM_Start(&amp;htim4, TIM_CHANNEL_1)开启定时器PWM输出。在while循环中不断修改脉宽</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"> /* Initialize all configured peripherals */</span><br><span class="line"> MX_GPIO_Init();</span><br><span class="line"> MX_TIM1_Init();</span><br><span class="line"> /* USER CODE BEGIN 2 */</span><br><span class="line">HAL_TIM_PWM_Start(&amp;htim1,TIM_CHANNEL_1);</span><br><span class="line"> /* USER CODE END 2 */</span><br><span class="line"></span><br><span class="line"> /* Infinite loop */</span><br><span class="line"> /* USER CODE BEGIN WHILE */</span><br><span class="line"> while (1)</span><br><span class="line"> &#123;</span><br><span class="line">   /* USER CODE END WHILE */</span><br><span class="line"></span><br><span class="line">   /* USER CODE BEGIN 3 */</span><br><span class="line">	HAL_Delay(10);                  //如果要呼吸灯效果是不能这么短的延时的，这个延时长度只是为了让波形更明显</span><br><span class="line">	if(pwm_value == 0) step = 500;</span><br><span class="line">	if(pwm_value == 20000) step = -500; //这里同样是为了让波形更明显</span><br><span class="line">	pwm_value += step;</span><br><span class="line">	user_pwm_setvalue(pwm_value);</span><br><span class="line"> &#125;</span><br><span class="line"> /* USER CODE END 3 */</span><br></pre></td></tr></table></figure>
+
+<p>此时可以对输出引脚进行测量，如果不知道是哪一个引脚可以看CubeMX右侧的Pinout view，这里不再叙述，方法很多。<br>如果所有操作没问题，就可以看到：</p>
+<img src="/2019/10/26/CubeMX之PWM/ADS00003.BMP">  
+<p>此时在对应管脚上接入一个led就可以看到呼吸灯的效果(此时应修改上边几处标注的值才会有一个好效果)。<br>会出现像下边这样比较规则且逐渐增大的波形：</p>
+<img src="/2019/10/26/CubeMX之PWM/ADS00002.BMP">  
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/" title="CubeMX之PWM">http://www.qm-k.xyz/2019/10/26/CubeMX之PWM/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/嵌入式搬砖手册/" rel="tag"># 嵌入式搬砖手册</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/10/25/CubeMX之GPIO/" rel="next" title="CubeMX之GPIO">
+                  <i class="fa fa-chevron-left"></i> CubeMX之GPIO
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/10/27/RTTread输出PWM失败原因/" rel="prev" title="RTThread输出PWM失败原因">
+                  RTThread输出PWM失败原因 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":true},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="ros中我认为最重要的一点就是他构建了一套统一的通信机制,将硬件给隐藏掉,使得开发者可以专注于算法的研究.">
+<meta name="keywords" content="ROS系列教程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Publisher的实现">
+<meta property="og:url" content="http://www.qm-k.xyz/2020/02/10/Publisher的实现/index.html">
+<meta property="og:site_name" content="半生随笔">
+<meta property="og:description" content="ros中我认为最重要的一点就是他构建了一套统一的通信机制,将硬件给隐藏掉,使得开发者可以专注于算法的研究.">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/10/Publisher的实现/Snipaste_2020-02-12_17-56-19.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/10/Publisher的实现/Snipaste_2020-02-13_13-14-04.png">
+<meta property="og:image" content="http://www.qm-k.xyz/2020/02/10/Publisher的实现/Snipaste_2020-02-13_13-25-18.png">
+<meta property="og:updated_time" content="2020-03-15T04:47:42.815Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Publisher的实现">
+<meta name="twitter:description" content="ros中我认为最重要的一点就是他构建了一套统一的通信机制,将硬件给隐藏掉,使得开发者可以专注于算法的研究.">
+<meta name="twitter:image" content="http://www.qm-k.xyz/2020/02/10/Publisher的实现/Snipaste_2020-02-12_17-56-19.png">
+  <link rel="canonical" href="http://www.qm-k.xyz/2020/02/10/Publisher的实现/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Publisher的实现 | 半生随笔</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?745c9fe332486b8de3c37d75ed7ed4e0";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">半生随笔</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2020/02/10/Publisher的实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Qian NB">
+      <meta itemprop="description" content="钱宁博的blog<br>记录知识、也记录生活">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="半生随笔">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Publisher的实现
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-02-10 16:43:57" itemprop="dateCreated datePublished" datetime="2020-02-10T16:43:57+08:00">2020-02-10</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/ROS/" itemprop="url" rel="index"><span itemprop="name">ROS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/02/10/Publisher的实现/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2020/02/10/Publisher的实现/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>ros中我认为最重要的一点就是他构建了一套统一的通信机制,将硬件给隐藏掉,使得开发者可以专注于算法的研究.</p>
+<a id="more"></a>
+<h1 id="话题-topic"><a href="#话题-topic" class="headerlink" title="话题(topic)"></a>话题(topic)</h1><p>topic:<br>    话题是一个很常用的机制,如果学过操作系统,很容易就会把他和队列联系起来,先进先出,有固定长度.<br>    而用户不必关心他的具体实现,只需要按照固定的方式创建所需数据类型的topic,然后将需要发送的标准数据使用系统提供的方法进行发送,接收的节点用系统提供的方法进行接收,即可完成数据的交换.所以只要是系统提供的标准数据或是用户定义过的数据,就可以很轻松的使用一些集成好的算法包进行测试.</p>
+<h1 id="发布-publish"><a href="#发布-publish" class="headerlink" title="发布(publish)"></a>发布(publish)</h1><p>这里以一个具体的例子来讲:</p>
+<img src="/2020/02/10/Publisher的实现/Snipaste_2020-02-12_17-56-19.png" title="rqt_graph">
+<p>其中有两个node,一个topic,这里使用<a href="https://www.qm-k.xyz/2020/02/09/%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%8A%9F%E8%83%BD%E5%8C%85/">工作空间于功能包</a>中创建的包进行测试.<br>ros自带的小乌龟节点<code>rosrun turtlesim turtlesim_node</code>会根据<code>/turtle1/cmd_vel</code>话题的内容进行移动,所以我们自己写的publisher向该话题发布速度信息,能使得小乌龟动起来就说明我们的publish正常工作了.  </p>
+<h1 id="涉及的操作"><a href="#涉及的操作" class="headerlink" title="涉及的操作"></a>涉及的操作</h1><table>
+<thead>
+<tr>
+<th align="center">操作</th>
+<th align="center">命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">编译</td>
+<td align="center">$catkin_make <br> #只能在工程的根目录下进行，就是在上文的catkin_ws中</td>
+</tr>
+<tr>
+<td align="center">启动小乌龟的节点</td>
+<td align="center">$rosrun turtlesim turtlesim_node</td>
+</tr>
+<tr>
+<td align="center">启动自己的节点</td>
+<td align="center">$rosrun &lt;包名&gt; &lt;节点名&gt; <br> 包名是创建时的命令指定的也就是src目录下的文件夹名，可以进行多级嵌套以最深处的为准 <br> 节点名则为编译源文件时在CMakelist.txt中指定的可执行程序名，或为python等脚本语言的脚本名<br><em>注意：这个和系统运行时计算图中的节点不是一个东西，计算图中的节点是程序中使用ros::init()进行定义的</em></td>
+</tr>
+<tr>
+<td align="center">图形化显示当前的节点关系</td>
+<td align="center">$rosrun rqt_graph rqt_graph</td>
+</tr>
+<tr>
+<td align="center">显示当前的话题列表</td>
+<td align="center">$rostopic list</td>
+</tr>
+<tr>
+<td align="center">生效环境变量</td>
+<td align="center">$source devel/setup.bash</td>
+</tr>
+</tbody></table>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><p>要实现一个发布者需要四个环节：</p>
+<ol>
+<li>初始化ROS节点</li>
+<li>向ROS Master注册节点信息包括发布的话题名和话题中的消息类型</li>
+<li>创建消息数据</li>
+<li>按照一定的频率进行发送<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;ros/ros.h&gt;</span><br><span class="line">#include &lt;geometry_msgs/Twist.h&gt;</span><br><span class="line">int main(int argc ,char **argv )</span><br><span class="line">&#123;</span><br><span class="line">    //1. ROS节点初始化，定义计算图的节点名为vel_public</span><br><span class="line">    ros::init(argc,argv,&quot;vel_public&quot;);</span><br><span class="line">    //创建节点句柄</span><br><span class="line">    ros::NodeHandle n;</span><br><span class="line">    //2. 新建发布者，设定消息类型为Twist，向/turtle1/vmd_vel话题发送消息，队列长度设为10</span><br><span class="line">    ros::Publisher turtle_vel_pub = n.advertise&lt;geometry_msgs::Twist&gt;(&quot;/turtle1/cmd_vel&quot;,10);</span><br><span class="line">    //设定循环周期，可以确定loop_rate.sleep()的时间</span><br><span class="line">    ros::Rate loop_rate(10);</span><br><span class="line"></span><br><span class="line">    while(ros::ok())</span><br><span class="line">    &#123;</span><br><span class="line">        //3. 初始化消息类型为twist</span><br><span class="line">        geometry_msgs::Twist vel_msg;</span><br><span class="line">        vel_msg.linear.x = 5 ; </span><br><span class="line">        vel_msg.angular.z = 2 ; </span><br><span class="line">        //根据publisher初始话的设置进行发布</span><br><span class="line">        turtle_vel_pub.publish(vel_msg);</span><br><span class="line">        ROS_INFO(&quot;Publisher connmend  %0.2f m/s , %0.2f rad/s&quot;,vel_msg.linear.x,vel_msg.angular.z);</span><br><span class="line"></span><br><span class="line">        loop_rate.sleep();</span><br><span class="line">&#125;</span><br><span class="line">return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h1><p>c++在ROS中是使用CMake来管理的，修改包中的CMakelist.txt即可。过程很简单：</p>
+<ol>
+<li>设置需要生成的代码和可执行文件名（最后会生成在catkin_ws/devel/lib/包名/可执行程序，也就是节点名）：<code>add_executable(节点名 src/源文件)</code></li>
+<li>链接需要的库：<code>target_link_libraries(节点名 ${catkin_LIBRARIES})</code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_executable(vel_publisher src/vel_publisher.cpp) #编译</span><br><span class="line">target_link_libraries(vel_publisher $&#123;catkin_LIBRARIES&#125;) #链接</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>这些设置写在<code>install</code>的最后和<code>build</code>之前就可以,注释写的很清楚具体的书写规范和每一个命令的具体功能。</p>
+<img src="/2020/02/10/Publisher的实现/Snipaste_2020-02-13_13-14-04.png">
+<p>之后直接回到工程根目录下catkin_make就可以，编译结束使用<code>source devel/setup.bash</code>刷新环境变量让系统能找到刚编译的包。  </p>
+<img src="/2020/02/10/Publisher的实现/Snipaste_2020-02-13_13-25-18.png">  
+<p>100%即为编译成功。 </p>
+<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$roscore #启动master节点</span><br><span class="line">$rosrun turtlesim turtlesim_node #打开小乌龟节点</span><br><span class="line">$rosrun 包名 节点名 #运行/devel/lib/包名/目录下的节点可执行程序</span><br></pre></td></tr></table></figure>
+    </div>
+
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Qian NB</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://www.qm-k.xyz/2020/02/10/Publisher的实现/" title="Publisher的实现">http://www.qm-k.xyz/2020/02/10/Publisher的实现/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/ROS系列教程/" rel="tag"># ROS系列教程</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/02/09/工作空间与功能包/" rel="next" title="ROS工作空间与功能包">
+                  <i class="fa fa-chevron-left"></i> ROS工作空间与功能包
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/02/13/Subscriber的实现/" rel="prev" title="Subscriber的实现">
+                  Subscriber的实现 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="comments"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#话题-topic"><span class="nav-number">1.</span> <span class="nav-text">话题(topic)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#发布-publish"><span class="nav-number">2.</span> <span class="nav-text">发布(publish)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#涉及的操作"><span class="nav-number">3.</span> <span class="nav-text">涉及的操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码"><span class="nav-number">4.</span> <span class="nav-text">代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#编译"><span class="nav-number">5.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行"><span class="nav-number">6.</span> <span class="nav-text">运行</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Qian NB</p>
+  <div class="site-description" itemprop="description">钱宁博的blog<br>记录知识、也记录生活</div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/qm-k" title="GitHub &rarr; https://github.com/qm-k" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Qian NB</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize("");
+    }
+  </script>
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('div.pdf').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/pdfobject@2/pdfobject.min.js', () => {
+    document.querySelectorAll('div.pdf').forEach(element => {
+      PDFObject.embed(element.getAttribute('target'), element, {
+        pdfOpenParams: {
+          navpanes: 0,
+          toolbar: 0,
+          statusbar: 0,
+          pagemode: 'thumbs',
+          view: 'FitH'
+        },
+        PDFJS_URL: '/lib/pdf/web/viewer.html',
+        height: element.getAttribute('height') || '500px'
+      });
+    });
+  }, window.PDFObject);
+}
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme: 'forest',
+      logLevel: 3,
+      flowchart: { curve: 'linear' },
+      gantt: { axisFormat: '%m/%d/%Y' },
+      sequence: { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+  var GUEST = ['nick', 'mail', 'link'];
+  var guest = 'nick,mail,link';
+  guest = guest.split(',').filter(item => {
+    return GUEST.includes(item);
+  });
+  new Valine({
+    el: '#comments',
+    verify: false,
+    notify: false,
+    appId: 'hLiSyJez4cKiuDzNIFe12oaB-gzGzoHsz',
+    appKey: 'HlfsOs3tT7EbNcXBpjjRGsMd',
+    placeholder: '评论时填写好邮箱，如果有回复会自动发往填写的邮箱。',
+    avatar: 'mm',
+    meta: guest,
+    pageSize: '10' || 10,
+    visitor: false,
+    lang: '' || 'zh-cn',
+    path: location.pathname
+  });
+}, window.Valine);
+</script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+</body>
+</html>
