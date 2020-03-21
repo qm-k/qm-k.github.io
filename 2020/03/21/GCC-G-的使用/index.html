@@ -55,22 +55,19 @@
   };
 </script>
 
-  <meta name="description" content="在STM32F407上移植PWM输出时，遇到了无法正常输出波形的问题，RT-Thread版本为4.0.2。">
-<meta name="keywords" content="嵌入式搬砖手册">
+  <meta name="description" content="应广大群众的需求，整理一下编译工具的使用。">
+<meta name="keywords" content="code">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RTThread输出PWM失败原因">
-<meta property="og:url" content="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/index.html">
+<meta property="og:title" content="GCC-G++的使用">
+<meta property="og:url" content="http://www.qm-k.xyz/2020/03/21/GCC-G-的使用/index.html">
 <meta property="og:site_name" content="半生随笔">
-<meta property="og:description" content="在STM32F407上移植PWM输出时，遇到了无法正常输出波形的问题，RT-Thread版本为4.0.2。">
+<meta property="og:description" content="应广大群众的需求，整理一下编译工具的使用。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/Snipaste_2019-10-27_13-49-30.jpg">
-<meta property="og:image" content="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/Snipaste_2019-10-27_13-51-57.jpg">
-<meta property="og:updated_time" content="2020-03-15T04:47:42.834Z">
+<meta property="og:updated_time" content="2020-03-21T13:00:55.814Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RTThread输出PWM失败原因">
-<meta name="twitter:description" content="在STM32F407上移植PWM输出时，遇到了无法正常输出波形的问题，RT-Thread版本为4.0.2。">
-<meta name="twitter:image" content="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/Snipaste_2019-10-27_13-49-30.jpg">
-  <link rel="canonical" href="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/">
+<meta name="twitter:title" content="GCC-G++的使用">
+<meta name="twitter:description" content="应广大群众的需求，整理一下编译工具的使用。">
+  <link rel="canonical" href="http://www.qm-k.xyz/2020/03/21/GCC-G-的使用/">
 
 
 <script id="page-configurations">
@@ -84,7 +81,7 @@
   };
 </script>
 
-  <title>RTThread输出PWM失败原因 | 半生随笔</title>
+  <title>GCC-G++的使用 | 半生随笔</title>
   
 
 
@@ -253,7 +250,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/">
+    <link itemprop="mainEntityOfPage" href="http://www.qm-k.xyz/2020/03/21/GCC-G-的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Qian NB">
@@ -265,7 +262,7 @@
       <meta itemprop="name" content="半生随笔">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">RTThread输出PWM失败原因
+        <h1 class="post-title" itemprop="name headline">GCC-G++的使用
 
           
         </h1>
@@ -281,19 +278,11 @@
                 
               
 
-              <time title="创建时间：2019-10-27 13:42:06" itemprop="dateCreated datePublished" datetime="2019-10-27T13:42:06+08:00">2019-10-27</time>
+              <time title="创建时间：2020-03-21 19:44:11 / 修改时间：21:00:55" itemprop="dateCreated datePublished" datetime="2020-03-21T19:44:11+08:00">2020-03-21</time>
             </span>
           
             
 
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-15 12:47:42" itemprop="dateModified" datetime="2020-03-15T12:47:42+08:00">2020-03-15</time>
-              </span>
             
           
             <span class="post-meta-item">
@@ -302,21 +291,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/" itemprop="url" rel="index"><span itemprop="name">学习</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/嵌入式/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a></span>
-
-                
-                
-                  ，
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/学习/嵌入式/RTOS/" itemprop="url" rel="index"><span itemprop="name">RTOS</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a></span>
 
                 
                 
@@ -335,7 +310,7 @@
       
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/10/27/RTTread输出PWM失败原因/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2019/10/27/RTTread输出PWM失败原因/" itemprop="commentCount"></span></a>
+    <a title="valine" href="/2020/03/21/GCC-G-的使用/#comments" itemprop="discussionUrl"><span class="post-comments-count valine-comment-count" data-xid="/2020/03/21/GCC-G-的使用/" itemprop="commentCount"></span></a>
   </span>
   
   
@@ -349,16 +324,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>在STM32F407上移植PWM输出时，遇到了无法正常输出波形的问题，RT-Thread版本为4.0.2。  </p>
+        <p>应广大群众的需求，整理一下编译工具的使用。</p>
 <a id="more"></a>
-<p>经过筛查发现是由于定时器时钟没有开启导致的，需要在初始化PWM设备时对其挂载的总线时钟进行初始化。  </p>
-<img src="/2019/10/27/RTTread输出PWM失败原因/Snipaste_2019-10-27_13-49-30.jpg">
-<p>打开<code>drv_pwm.c</code>文件，在PWM初始化中添加时钟初始化。  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#ifdef BSP_USING_PWM2</span><br><span class="line">    __HAL_RCC_TIM2_CLK_ENABLE();</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>Gcc&amp;G++是GNU中的工具链，分别用来编译c&amp;c++文件。</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ gcc [options] [filenames] -o [targetfile]</span><br><span class="line">$ g++ [options] [filenames] -o [targetfile]</span><br></pre></td></tr></table></figure>
 
-<p>添加完是这个样子的：  </p>
-<img src="/2019/10/27/RTTread输出PWM失败原因/Snipaste_2019-10-27_13-51-57.jpg">  
-<p>如果需要手工添加BSP可以参考：<br><a href="https://www.rt-thread.org/document/site/application-note/driver/pwm/an0037-rtthread-driver-pwm/" target="_blank" rel="noopener">STM32上使用PWM</a><br><a href="https://www.rt-thread.org/document/site/programming-manual/device/pwm/pwm/" target="_blank" rel="noopener">PWM设备</a></p>
+<p>options可以指定filenames文件编译的目标文件类型。<br>使用<code>-o</code>可以指定编译结果的名字，当然不指定也可以，会有默认的名字。<br>整个的编译流程为：</p>
+<pre class="mermaid">graph LR
+A[.c]-->|预处理 -E|B[.i]
+B -->|编译 -S| C[.s]
+C -->|汇编 -c| D[.o]
+D -->|链接 | E[可执行,默认为a.out]</pre>
+<h1 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h1><p>除了上边提到的<code>-E -S -c -o</code>之外还有一些别的参数可以使用。  </p>
+<h2 id="O"><a href="#O" class="headerlink" title="-O"></a>-O</h2><p>使用-O可以改变编译器对代码的优化等级，有时候不希望编译器在优化时改变我们的代码逻辑，这个时候可以用一个较低的优化等级<code>-O0</code>,-O指令可以加在g++&amp;gcc指令后的任何地方，使用方式为-On（n 常为0–3）。<br>优化等级越高，优化器对代码的改变也就越多，一般这个时候编译出来的可执行程序也就越快。<br>每一个等级的优化内容稍有不同：</p>
+<p>-O  主要进行跳转和延迟退栈两种优化；  </p>
+<p>-O2 除了完成-O1的优化之外，还进行一些额外的调整工作，如指令调整等。  </p>
+<p>-O3 则包括循环展开和其他一些与处理特性相关的优化工作。  </p>
+<p>选项将使编译的速度比使用 -O 时慢， 但通常产生的代码执行速度会更快。  </p>
+<h2 id="l-amp-L"><a href="#l-amp-L" class="headerlink" title="-l &amp; -L"></a>-l &amp; -L</h2><p>参考我之前的一篇文章：<a href="https://www.qm-k.xyz/2019/08/18/pkg-config%E7%9A%84%E4%BD%BF%E7%94%A8/">pkg-config的使用</a><br><code>-l</code>参数是用来指定需要的链接库的，比如我们需要用到一个<code>librknn_api.so</code>的动态链接库，这个时候我们可以把这个文件放进<code>/usr/lib</code>中使得g++之类的工具能找到他，然后在参数中添加<code>-lrknn_api</code>,如果和这个库配套的头文件也是没问题的我们就可以直接编译出结果。<br>例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ XX.cpp -lrknn_api</span><br></pre></td></tr></table></figure>
+
+<p>这个时候相信你也可以看出来一个动态链接库的命名方式了，把他对应的<code>.so</code>文件去掉<code>lib</code>和<code>.so</code>，剩下的就是编译工具能识别到的库名。<br>一般编译工具会在<code>/usr/lib</code>和<code>/usr/local/lib</code>文件夹中去找你需要的动态链接库，但是如果你的库不在这些路径下，这时候就需要使用<code>-L</code>来添加搜索路径，比如上边的<code>librknn_api.so</code>在<code>/usr/rknn/</code>目录下，就可以添加一个<code>-L/usr/rknn/</code>来使得编译工具能找到这个库。<br>比如这个样子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ XX.cpp -lrknn_api -L/usr/rknn/</span><br></pre></td></tr></table></figure>
+
+<p>经常编译一个开源源码遇到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/ld: cannot find -lxxx”</span><br></pre></td></tr></table></figure>
+
+<p>一般就是需要安装一下对应的库即可解决问题。  </p>
+<p>手工来写链接参数总是很麻烦的，还好很多库开发包提供了生成链接参数的程序，名字一般叫xxxx-config，一般放在/usr/bin目录下，比如 gtk1.2的链接参数生成程序是gtk-config，用法类似pkg-config，可以去看我之前专门讲这个的文章，现在基本都是支持pkg-config的，所以这个可以不管，了解一下。</p>
+<h2 id="i-amp-I"><a href="#i-amp-I" class="headerlink" title="-i &amp; -I"></a>-i &amp; -I</h2><p>他们的功能和<code>-l &amp; -L</code>功能类似，一个是添加头文件，一个是添加头文件路径，但是一般我们都在<code>.h</code>中使用<code>#include xxx.h</code>包含过了，所以主要就是用<code>-I</code>来声明头文件的目录，这个目录是可以用相对路径也可以用绝对路径的。<br>用法和上边的-L一致，就不细说了。  </p>
+<h2 id="Wall、-w-和-v参数"><a href="#Wall、-w-和-v参数" class="headerlink" title="-Wall、-w 和 -v参数"></a>-Wall、-w 和 -v参数</h2><p>输出控制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-Wall 打印出gcc提供的警告信息</span><br><span class="line">-w    关闭所有警告信息</span><br><span class="line">-v    列出所有编译步骤</span><br></pre></td></tr></table></figure>
+
+<h2 id="相关"><a href="#相关" class="headerlink" title="相关"></a>相关</h2><p>参考我之前的一篇文章：<a href="https://www.qm-k.xyz/2019/08/18/pkg-config%E7%9A%84%E4%BD%BF%E7%94%A8/">pkg-config的使用</a><br>里边提到了一些像PKG_CONFIG_PATH这样用于pkg-config查找pc文件的环境变量说明可以看一下，同时还有后边要写的Makefile中的<code>CC</code>指定c编译器，<code>CXX</code>指定cxx编译器，CFLAGS等等。</p>
 
     </div>
 
@@ -376,7 +374,7 @@
     <strong>本文作者： </strong>Qian NB</li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/" title="RTThread输出PWM失败原因">http://www.qm-k.xyz/2019/10/27/RTTread输出PWM失败原因/</a>
+    <a href="http://www.qm-k.xyz/2020/03/21/GCC-G-的使用/" title="GCC-G++的使用">http://www.qm-k.xyz/2020/03/21/GCC-G-的使用/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-ND</a> 许可协议。转载请注明出处！</li>
@@ -392,7 +390,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/嵌入式搬砖手册/" rel="tag"># 嵌入式搬砖手册</a>
+              <a href="/tags/code/" rel="tag"># code</a>
             
           </div>
         
@@ -402,8 +400,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/10/26/CubeMX之PWM/" rel="next" title="CubeMX之PWM">
-                  <i class="fa fa-chevron-left"></i> CubeMX之PWM
+                <a href="/2020/03/18/launch文件的使用/" rel="next" title="launch文件的使用">
+                  <i class="fa fa-chevron-left"></i> launch文件的使用
                 </a>
               
             </div>
@@ -411,10 +409,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/11/02/CubeMX之EXIT/" rel="prev" title="CubeMX之EXTI">
-                  CubeMX之EXTI <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -466,6 +460,8 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用"><span class="nav-number">1.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数"><span class="nav-number">2.</span> <span class="nav-text">参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#O"><span class="nav-number">2.1.</span> <span class="nav-text">-O</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#l-amp-L"><span class="nav-number">2.2.</span> <span class="nav-text">-l &amp; -L</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#i-amp-I"><span class="nav-number">2.3.</span> <span class="nav-text">-i &amp; -I</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Wall、-w-和-v参数"><span class="nav-number">2.4.</span> <span class="nav-text">-Wall、-w 和 -v参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关"><span class="nav-number">2.5.</span> <span class="nav-text">相关</span></a></li></ol></li></ol></div>
+        
       </div>
       <!--/noindex-->
 
