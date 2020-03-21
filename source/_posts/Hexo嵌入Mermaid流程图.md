@@ -92,6 +92,12 @@ Class01 : int gorilla
 Class08 <--> C2: Cool label
 ```
 {%asset_img view.png%}
+
+# 又记
+又发现一个不一样的流程图工具，这个看起来更好看一点，有空试试
+```
+npm install --save hexo-filter-flowchart
+```
 ## 参考
 [荒野之萍的博客](https://www.cnblogs.com/icoty23/p/10911231.html)  
 [插件官方GitHub](https://github.com/webappdevelp/hexo-filter-mermaid-diagrams)  
