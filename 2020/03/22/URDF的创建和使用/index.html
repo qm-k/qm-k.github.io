@@ -78,7 +78,7 @@
 <meta property="og:image" content="http://www.qm-k.xyz/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_22-20-01.png">
 <meta property="og:image" content="http://www.qm-k.xyz/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_22-59-56.png">
 <meta property="og:image" content="http://www.qm-k.xyz/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_22-30-50.png">
-<meta property="og:updated_time" content="2020-03-28T15:02:26.218Z">
+<meta property="og:updated_time" content="2020-03-28T15:13:18.046Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="URDF的创建和使用">
 <meta name="twitter:description" content="ROS中仿真一般使用URDF模型来仿真，它可以直接通过写脚本的方式实现模型的构建，详情可以看wiki，但是这种方式首先建模不精细，其次过程太痛苦了，如果想要简单一点的话我们可以通过想SW或者matlab这样的软件直接导出模型使用，导出的URDF文件可以在Rviz、gazebo还有V-rep等仿真器里直接使用。">
@@ -305,7 +305,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-28 23:02:26" itemprop="dateModified" datetime="2020-03-28T23:02:26+08:00">2020-03-28</time>
+                <time title="修改时间：2020-03-28 23:13:18" itemprop="dateModified" datetime="2020-03-28T23:13:18+08:00">2020-03-28</time>
               </span>
             
           
@@ -386,13 +386,9 @@
 <p>比如我们创建一个轮子的转轴：</p>
 <ol>
 <li>点击基准轴<img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_21-09-02.png" title="点击基准轴axis">  </li>
-<li>设置转轴方向  </li>
-</ol>
-<img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_21-10-03.png" title="轮子以垂直轮子侧面的方向为轴做转动，转动中心由frame原点确定">  
+<li>设置转轴方向<br>以垂直轮子侧面的方向为轴做转动，转动中心由frame原点确定。  <img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_21-10-03.png" title="轮子以垂直轮子侧面的方向为轴做转动，转动中心由frame原点确定">  
 <img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_21-11-01.png" title="建立完成之后可以拉长方便显示">  
-<p>这样我们的坐标轴就建好了，下边建立参考坐标系。</p>
-<h2 id="坐标系"><a href="#坐标系" class="headerlink" title="坐标系"></a>坐标系</h2><p>定义的坐标系在导出URDF之后是和link绑定的，frame的姿态就是link的姿态，frame绕轴做轴对应属性的运动，frame原点就是link的运动中心。<br>在ROS与SW中坐标系统一使用一下颜色定义：<br>红-》x 蓝色-》z 绿色-》y  </p>
-<ol>
+这样我们的坐标轴就建好了，下边建立参考坐标系。<h2 id="坐标系"><a href="#坐标系" class="headerlink" title="坐标系"></a>坐标系</h2>定义的坐标系在导出URDF之后是和link绑定的，frame的姿态就是link的姿态，frame绕轴做轴对应属性的运动，frame原点就是link的运动中心。<br>在ROS与SW中坐标系统一使用一下颜色定义：<br>红-》x 蓝色-》z 绿色-》y  </li>
 <li>点击坐标系<img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_21-14-07.png" title="点击坐标系新建坐标系">  </li>
 <li>确定frame的原点与朝向<img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_21-18-08.png" title="确定原点与三个轴的朝向">  
 link是按frame的原点绕axis做运动的，所以我们应该把frame的原点设置在轮子的圆心处，可以看到我在旁边还设置了几个坐标系，如果最后选择那几个坐标系的话轮子就会绕那几个坐标系的原点转动，可以自己尝试一下。<br>同时我们的坐标系最好是按照ROS的规范进行设置，一般情况下我们的Z轴是朝上的，Y轴是向左的，X轴是向前的，满足右手坐标系，当然如果不这么干也可以，效果是一样的。<br>如果是滑轨之类的则一般Z轴为滑动方向，转动关节一般以Z轴为轴，当然这些都是一般情况，坐标系可以随便设置，不影响结果，只影响计算过程。  </li>
