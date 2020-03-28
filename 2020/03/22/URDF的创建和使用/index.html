@@ -78,7 +78,7 @@
 <meta property="og:image" content="http://www.qm-k.xyz/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_22-20-01.png">
 <meta property="og:image" content="http://www.qm-k.xyz/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_22-59-56.png">
 <meta property="og:image" content="http://www.qm-k.xyz/2020/03/22/URDF的创建和使用/Snipaste_2020-03-28_22-30-50.png">
-<meta property="og:updated_time" content="2020-03-28T15:00:18.960Z">
+<meta property="og:updated_time" content="2020-03-28T15:02:26.218Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="URDF的创建和使用">
 <meta name="twitter:description" content="ROS中仿真一般使用URDF模型来仿真，它可以直接通过写脚本的方式实现模型的构建，详情可以看wiki，但是这种方式首先建模不精细，其次过程太痛苦了，如果想要简单一点的话我们可以通过想SW或者matlab这样的软件直接导出模型使用，导出的URDF文件可以在Rviz、gazebo还有V-rep等仿真器里直接使用。">
@@ -305,7 +305,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-03-28 23:00:18" itemprop="dateModified" datetime="2020-03-28T23:00:18+08:00">2020-03-28</time>
+                <time title="修改时间：2020-03-28 23:02:26" itemprop="dateModified" datetime="2020-03-28T23:02:26+08:00">2020-03-28</time>
               </span>
             
           
@@ -367,7 +367,7 @@
 </ol>
 <p>这些属性导出时和工具→评估→质量属性里的设置保持一致。</p>
 <h1 id="构建基准轴和坐标系"><a href="#构建基准轴和坐标系" class="headerlink" title="构建基准轴和坐标系"></a>构建基准轴和坐标系</h1><img src="/2020/03/22/URDF的创建和使用/Snipaste_2020-03-22_17-03-50.png">  
-<p>这一步似乎是可以跳过的，因为后边SW可以选择自动生成。但是我们还是自己构建一下。<br>对joint和link的定义不理解的可以去看官方的Wiki还有像古月的博客，虽然我很烦那些卖套件和卖课的，但是这些基础的定义他们写的还是可以的（当然官网的是最全、最准确的，尽量看官网的）。<br>在下边的描述中我是默认读者对———— origin 描述的是joint相对父节点的相对位置、axis是描述joint的运动学参数、</p>
+<p>这一步似乎是可以跳过的，因为后边SW可以选择自动生成。但是我们还是自己构建一下。<br>对joint和link的定义不理解的可以去看官方的Wiki还有像古月的博客，虽然我很烦那些卖套件和卖课的，但是这些基础的定义他们写的还是可以的（当然官网的是最全、最准确的，尽量看官网的）。<br>在下边的描述中我是默认读者对———— origin 描述的是joint相对父节点的相对位置、axis是描述joint的运动学参数等等是熟悉的。</p>
 <p>下边我写的都是他们没有的。  </p>
 <p>我理解的SW做的工作就是把基准轴转换成了joint，把坐标系转换成了对应link的坐标系，在生成link时零件和参考坐标系之间的相对位置不变的转换成了link和他的坐标系（这一点2018的SW经过我无数次的验证，已经确定是有BUG的，不要再用18了，他导出的STL坐标原点不在我规定的坐标原点，当然也可能是我的软件问题，毕竟没有交保护费）<br>总结起来就是，SW总共做了两件事：</p>
 <ol>
